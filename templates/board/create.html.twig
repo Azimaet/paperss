@@ -1,0 +1,105 @@
+{% extends 'base.html.twig' %}
+
+{% form_theme formBoard 'bootstrap_4_layout.html.twig' %}
+
+{% block title %}New board{% endblock %}
+
+{% block stylesheets %}
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+{% endblock %}
+
+
+{% block body %}
+<div class="container_createboardform">
+    <h1>3 - Page de création de Board!</h1>
+
+    {{ form_start(formBoard) }}
+
+        {{ form_row(formBoard.title, {'attr' : { 'placeholder' : 'Titre de la Board'}}) }}
+        {{ form_row(formBoard.category) }}
+        {{ form_row(formBoard.public)}}
+        {{ form_row(formBoard.slug, {'attr' : { 'placeholder' : 'Domaine de la Board'}}) }}
+        {{ form_row(formBoard.content, {'attr' : { 'placeholder' : 'Vos flux RSS'}}) }}
+        
+        <ul class="sources" data-prototype="{{ form_widget(formBoard.sources.vars.prototype)|e('html_attr') }}">
+            {% for source in formBoard.sources %}
+            <li>
+                {{ form_widget(source.url, { 'attr': {'readonly':'readonly'} }) }}
+            </li>
+            {% endfor %}
+        </ul>
+        
+        <button type="submit" class="btn btn-success">
+        {% if route == "board_edit" %}
+        Editer la Board
+        {% else %}
+        Ajouter la Board
+        {% endif %}
+        </button>
+
+    {{ form_end(formBoard) }}
+    
+</div>
+{% endblock %}
+
+
+
+
+{% block javascripts %}
+
+<script>
+    var newSourcesUl;
+    var exsSourcesList;
+    var addSourceBtn = $('<button type="button" class="add_source_link">Add a Source</button>');
+    var addSourceLi = $('<li></li>').append(addSourceBtn);
+
+    function pushDeleteBtn(sourceElem) {
+        var btnDeleteSource = $('<button type="button">Delete this Source</button>');
+        sourceElem.append(btnDeleteSource);
+
+        btnDeleteSource.on('click', function(e) {
+            sourceElem.remove();
+        });
+    }
+
+    function addSourceForm(newSourcesUl, addSourceLi) {
+        var prototype = newSourcesUl.data('prototype');
+        var index = newSourcesUl.data('index');
+        var newForm = prototype;
+
+        // Replace '__name__' in the prototype's HTML to
+        // instead be a number based on how many items we have
+        newForm = newForm.replace(/__name__/g, index);
+
+        // increase the index with one for the next item
+        newSourcesUl.data('index', index + 1);
+
+        // Display the form in the page in an li, before the "Add a Source" link li
+        var $newFormLi = $('<li></li>').append(newForm);
+        addSourceLi.before($newFormLi);
+
+        // add a delete link to the new form
+        pushDeleteBtn($newFormLi);
+    }
+
+    jQuery(document).ready(function() {
+        newSourcesUl = $('ul.sources');
+
+        // Push a "Delete" button for all new sources.
+        newSourcesUl.find('li').each(function() {
+            pushDeleteBtn($(this));
+        });
+
+        // Push a global "Add a Source" button.
+        newSourcesUl.append(addSourceLi);
+
+        // count the current form inputs we have (e.g. 2), use that as the new
+        // index when inserting a new item (e.g. 2)
+        newSourcesUl.data('index', newSourcesUl.find('input').length);
+
+        addSourceBtn.on('click', function(e) {
+            addSourceForm(newSourcesUl, addSourceLi);
+        });
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title>{% block title %}Welcome!{% endblock %}</title>
+        <script
+			  src="https://code.jquery.com/jquery-3.5.0.min.js"
+			  integrity="sha256-xNzN2a4ltkB44Mc/Jz3pT4iU1cmeR0FkXs4pru/JxaQ="
+			  crossorigin="anonymous"></script>
+              
+        {% block stylesheets %}
+        <style>
+            .container {
+                width: 100%;
+                margin: 100px;
+            }
+        </style>
+        {% endblock %}
+    </head>
+    <body>
+        <div class="container">
+            
+            {% block body %}{% endblock %}
+            {% block javascripts %}{% endblock %}
+        </div>
+    </body>
+</html>
