@@ -4,7 +4,6 @@ namespace App\Form;
 
 use App\Entity\Board;
 use App\Entity\Source;
-use App\Entity\Category;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
@@ -17,10 +16,6 @@ class BoardType extends AbstractType
     {
         $builder
             ->add('title')
-            ->add('category', EntityType::class, [
-                'class' => Category::class,
-                'choice_label' => 'title'
-            ])
             ->add('public')
             ->add('slug')
             ->add('content')

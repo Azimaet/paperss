@@ -5,7 +5,6 @@ namespace App\Controller;
 use App\Entity\Board;
 use App\Entity\Source;
 use App\Form\BoardType;
-use App\Entity\Category;
 use App\Factory\BoardContentFactory;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
@@ -86,7 +85,7 @@ class BoardController extends AbstractController
         $repo = $this->getDoctrine()->getRepository(Board::class);
 
         $board = $repo->findOneBySlug($slug);
-        
+
         if(empty($board)){
             throw new \RuntimeException('The board dosn\'t exist. Verify url');
         }
