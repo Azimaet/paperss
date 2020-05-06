@@ -65,10 +65,6 @@ class Board
      */
     private $sources;
 
-    /**
-     * @ORM\ManyToMany(targetEntity="App\Entity\Tag", mappedBy="relation")
-     */
-    private $tags;
 
     /**
      * @ORM\OneToMany(targetEntity="App\Entity\Filter", mappedBy="board")
@@ -79,7 +75,6 @@ class Board
     {
         $this->comments = new ArrayCollection();
         $this->sources = new ArrayCollection();
-        $this->tags = new ArrayCollection();
         $this->filters = new ArrayCollection();
     }
 
@@ -226,34 +221,6 @@ class Board
         if ($this->sources->contains($source)) {
             $this->sources->removeElement($source);
             $source->removeBoard($this);
-        }
-
-        return $this;
-    }
-
-    /**
-     * @return Collection|Tag[]
-     */
-    public function getTags(): Collection
-    {
-        return $this->tags;
-    }
-
-    public function addTag(Tag $tag): self
-    {
-        if (!$this->tags->contains($tag)) {
-            $this->tags[] = $tag;
-            $tag->addRelation($this);
-        }
-
-        return $this;
-    }
-
-    public function removeTag(Tag $tag): self
-    {
-        if ($this->tags->contains($tag)) {
-            $this->tags->removeElement($tag);
-            $tag->removeRelation($this);
         }
 
         return $this;
