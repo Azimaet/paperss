@@ -10,7 +10,14 @@
 
 <div class="example-wrapper">
     <h1>4 - Welcome on {{ slug }} Board!</h1>
-
+    {{ dump(items)}}
+    {% for item in items %}
+        <li style="list-style: none;">
+            {#<span>{{ item.date[0]}}</span>#}
+            <img src="{{ item.icon }}" alt="" style="width:20px; height: 20px;">
+            <a target="_blank" href="{{ item.url }}">{{ item.content }}</a>
+        </li>
+    {% endfor %}
     <p>
         - Pour l'instant on peut arriver sur n'importe quelle url de board, mais à l'avenir, seule les boards inscrites en DDB focntionneront
     </p>

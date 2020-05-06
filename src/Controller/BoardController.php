@@ -6,6 +6,7 @@ use App\Entity\Board;
 use App\Entity\Source;
 use App\Form\BoardType;
 use App\Entity\Category;
+use App\Factory\BoardContentFactory;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -83,15 +84,20 @@ class BoardController extends AbstractController
     public function boardShow($slug)
     {
         $repo = $this->getDoctrine()->getRepository(Board::class);
-        $board = $repo->findBySlug($slug);
 
+        $board = $repo->findOneBySlug($slug);
+        
         if(empty($board)){
             throw new \RuntimeException('The board dosn\'t exist. Verify url');
         }
 
+        $factory = new BoardContentFactory($board);
+
         return $this->render('board/board.html.twig', [
             'controller_name' => 'BoardController',
             'board' => $board,
+            'items' => $factory->items,
+            'languages' => $factory->languages,
             'slug' => $slug,
         ]);
     }
@@ -139,11 +145,11 @@ class BoardController extends AbstractController
 
     private function verifySourceUrl($source){
         $url = $source->getUrl();
-        $isXml = strpos($url, ".xml");
+        $isXml = (strpos($url, ".xml") || strpos($url, ".rss"));
         $file_headers = @get_headers($url);
 
         if($isXml === false){
-            throw new \RuntimeException('[' . $url . '] Source is not a rss .xml url. Please change it or delete it. .css files come over soon.');
+            throw new \RuntimeException('[' . $url . '] Source is not a rss .xml url. Please change it or delete it.');
         }
 
         if((filter_var($url, FILTER_VALIDATE_URL) === false) || !$file_headers || $file_headers[0] == 'HTTP/1.1 404 Not Found'){
