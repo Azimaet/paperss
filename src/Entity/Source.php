@@ -38,9 +38,15 @@ class Source
      */
     private $board;
 
+    /**
+     * @ORM\OneToMany(targetEntity="App\Entity\Filter", mappedBy="source")
+     */
+    private $filters;
+
     public function __construct()
     {
         $this->board = new ArrayCollection();
+        $this->filters = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -105,6 +111,37 @@ class Source
     {
         if ($this->board->contains($board)) {
             $this->board->removeElement($board);
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Filter[]
+     */
+    public function getFilters(): Collection
+    {
+        return $this->filters;
+    }
+
+    public function addFilter(Filter $filter): self
+    {
+        if (!$this->filters->contains($filter)) {
+            $this->filters[] = $filter;
+            $filter->setSource($this);
+        }
+
+        return $this;
+    }
+
+    public function removeFilter(Filter $filter): self
+    {
+        if ($this->filters->contains($filter)) {
+            $this->filters->removeElement($filter);
+            // set the owning side to null (unless already changed)
+            if ($filter->getSource() === $this) {
+                $filter->setSource(null);
+            }
         }
 
         return $this;

@@ -70,11 +70,17 @@ class Board
      */
     private $tags;
 
+    /**
+     * @ORM\OneToMany(targetEntity="App\Entity\Filter", mappedBy="board")
+     */
+    private $filters;
+
     public function __construct()
     {
         $this->comments = new ArrayCollection();
         $this->sources = new ArrayCollection();
         $this->tags = new ArrayCollection();
+        $this->filters = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -248,6 +254,37 @@ class Board
         if ($this->tags->contains($tag)) {
             $this->tags->removeElement($tag);
             $tag->removeRelation($this);
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Filter[]
+     */
+    public function getFilters(): Collection
+    {
+        return $this->filters;
+    }
+
+    public function addFilter(Filter $filter): self
+    {
+        if (!$this->filters->contains($filter)) {
+            $this->filters[] = $filter;
+            $filter->setBoard($this);
+        }
+
+        return $this;
+    }
+
+    public function removeFilter(Filter $filter): self
+    {
+        if ($this->filters->contains($filter)) {
+            $this->filters->removeElement($filter);
+            // set the owning side to null (unless already changed)
+            if ($filter->getBoard() === $this) {
+                $filter->setBoard(null);
+            }
         }
 
         return $this;
