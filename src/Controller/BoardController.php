@@ -32,17 +32,25 @@ class BoardController extends AbstractController
             return $this->redirectToRoute('board_create');
         }
 
+        // Init needed objects depending of the route:
         if($route === "board_create"){
-            $board = new Board();
             $originalBoardSlug = null;
             $originalSources = null;
+            $originalTags = null;
+
+            $board = new Board();
         }
         elseif ($route === "board_edit") {
             $originalBoardSlug = $board->getSlug();
-
             $originalSources = new ArrayCollection();
+            $originalTags = new ArrayCollection();
+
             foreach ($board->getSources() as $source) {
                 $originalSources->add($source);
+            }
+
+            foreach ($board->getTags() as $tag) {
+                $originalTags->add($tag);
             }
         }
 
@@ -61,6 +69,8 @@ class BoardController extends AbstractController
             }
 
             $this->sourcesManager($manager, $route, $board, $originalSources);
+
+            $this->tagsManager($manager, $route, $board, $originalTags);
 
             // Persist Datas in DDB:
             $manager->persist($board);
@@ -170,7 +180,7 @@ class BoardController extends AbstractController
         $repoBoard = $this->getDoctrine()->getRepository(Board::class);
         $sources = $board->getSources();
 
-        foreach ($sources as $source) {
+        foreach ($sources as $source){
             // Avoid override database if source already exists by one another board.
             $existingSource = $repoSource->findOneByUrl($source->getUrl());
             if(!empty($existingSource)){
@@ -197,6 +207,38 @@ class BoardController extends AbstractController
 
                     if($originalSource->getBoard()->isEmpty()){
                         $manager->remove($originalSource);
+                    }
+                }
+            }
+        }
+    }
+
+    private function tagsManager($manager, $route, $board, $originalTags = null){
+        $repoTag = $this->getDoctrine()->getRepository(Tag::class);
+        $repoBoard = $this->getDoctrine()->getRepository(Board::class);
+        $tags = $board->getSources();
+
+        foreach($tags as $tag){
+            // Avoid override database if tag already exists by one another board.
+            $existingTag = $repoTag->findOneByLabel($tag->getLabel());
+            if(!empty($existingTag)){
+                $board->removeTag($tag);
+                $tag = $existingTag;
+            }
+
+            $board->addTag($tag);
+            $manager->persist($tag);
+        }
+
+        // Remove the relationship between the Tag and the Board, if tag is deleted.
+        // Also, if Tag is not anymore relied to any Board, flush it.
+        if($route === "board_edit"){
+            foreach ($originalTags as $originalTag) {
+                if(false === $tags->contains($originalTag)) {
+                    $originalTag->getBoard()->removeElement($tag);
+
+                    if($originalTag->getBoard()->isEmpty()){
+                        $manager->remove($originalTag);
                     }
                 }
             }

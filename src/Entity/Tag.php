@@ -24,7 +24,7 @@ class Tag
     private $label;
 
     /**
-     * @ORM\ManyToMany(targetEntity="App\Entity\board", inversedBy="tags")
+     * @ORM\ManyToMany(targetEntity="App\Entity\Board", inversedBy="tags")
      */
     private $board;
 
@@ -51,14 +51,14 @@ class Tag
     }
 
     /**
-     * @return Collection|board[]
+     * @return Collection|Board[]
      */
     public function getBoard(): Collection
     {
         return $this->board;
     }
 
-    public function addBoard(board $board): self
+    public function addBoard(Board $board): self
     {
         if (!$this->board->contains($board)) {
             $this->board[] = $board;
@@ -67,7 +67,7 @@ class Tag
         return $this;
     }
 
-    public function removeBoard(board $board): self
+    public function removeBoard(Board $board): self
     {
         if ($this->board->contains($board)) {
             $this->board->removeElement($board);

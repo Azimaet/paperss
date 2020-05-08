@@ -13,7 +13,7 @@
 
     {% for item in items %}
         <li style="list-style: none;">
-            <span>{{ item.date }}</span>
+            <span>{{ item.date|date("d M H:m") }}</span>
             <img src="{{ item.icon }}" alt="" style="width:20px; height: 20px;">
             <a target="_blank" href="{{ item.url }}">{{ item.content }}</a>
         </li>

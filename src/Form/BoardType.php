@@ -26,6 +26,10 @@ class BoardType extends AbstractType
                 'allow_delete' => true,
                 'by_reference' => false,
             ])
+            ->add('tags', CollectionType::class, [
+                'entry_type' => TagType::class,
+                'entry_options' => ['label' => false],
+            ])
         ;
     }
 

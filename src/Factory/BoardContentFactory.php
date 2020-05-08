@@ -66,7 +66,7 @@ class BoardContentFactory
         }
 
         usort($items, array ($this, "sortByDate"));
-        
+
         return $items;
     }
 
