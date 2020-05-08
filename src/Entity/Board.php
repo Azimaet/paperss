@@ -65,14 +65,13 @@ class Board
      */
     private $sources;
 
-
     /**
      * @ORM\OneToMany(targetEntity="App\Entity\Filter", mappedBy="board")
      */
     private $filters;
 
     /**
-     * @ORM\ManyToMany(targetEntity="App\Entity\Tag", mappedBy="board")
+     * @ORM\ManyToMany(targetEntity="App\Entity\Tag", cascade={"persist"}, mappedBy="board")
      */
     private $tags;
 

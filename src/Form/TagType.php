@@ -12,12 +12,7 @@ class TagType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('label', [
-                'attr' => [
-                    'placeholder' => 'tag',
-                ]
-            ])
-            ->add('board')
+            ->add('label')
         ;
     }
 

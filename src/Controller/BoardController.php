@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Entity\Tag;
 use App\Entity\Board;
 use App\Entity\Source;
 use App\Form\BoardType;
@@ -216,7 +217,7 @@ class BoardController extends AbstractController
     private function tagsManager($manager, $route, $board, $originalTags = null){
         $repoTag = $this->getDoctrine()->getRepository(Tag::class);
         $repoBoard = $this->getDoctrine()->getRepository(Board::class);
-        $tags = $board->getSources();
+        $tags = $board->getTags();
 
         foreach($tags as $tag){
             // Avoid override database if tag already exists by one another board.

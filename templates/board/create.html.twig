@@ -27,6 +27,14 @@
             </li>
             {% endfor %}
         </ul>
+
+        <ul class="tags" data-prototype="{{ form_widget(formBoard.tags.vars.prototype)|e('html_attr') }}">
+            {% for tag in formBoard.tags %}
+            <li>
+                {{ form_widget(tag.label, { 'attr': {'readonly':'readonly'} }) }}
+            </li>
+            {% endfor %}
+        </ul>
         
         <button type="submit" class="btn btn-success">
         {% if route == "board_edit" %}
@@ -45,19 +53,25 @@
 
 
 {% block javascripts %}
-
 <script>
     var newSourcesUl;
     var exsSourcesList;
     var addSourceBtn = $('<button type="button" class="add_source_link">Add a Source</button>');
     var addSourceLi = $('<li></li>').append(addSourceBtn);
+    
+    var newTagsUl;
+    var exsTagsList;
+    var addTagBtn = $('<button type="button" class="add_tag_link">Add a Tag</button>');
+    var addTagLi = $('<li></li>').append(addTagBtn);
 
-    function pushDeleteBtn(sourceElem) {
-        var btnDeleteSource = $('<button type="button">Delete this Source</button>');
-        sourceElem.append(btnDeleteSource);
 
-        btnDeleteSource.on('click', function(e) {
-            sourceElem.remove();
+    function pushDeleteBtn(elem, context) {
+        var btnDelete = $('<button type="button">Delete this ' + context + '</button>');
+
+        elem.append(btnDelete);
+
+        btnDelete.on('click', function(e) {
+            elem.remove();
         });
     }
 
@@ -78,26 +92,57 @@
         addSourceLi.before($newFormLi);
 
         // add a delete link to the new form
-        pushDeleteBtn($newFormLi);
+        pushDeleteBtn($newFormLi, 'source');
+    }
+
+    function addTagForm(newTagsUl, addTagLi) {
+        var prototype = newTagsUl.data('prototype');
+        var index = newTagsUl.data('index');
+        var newForm = prototype;
+
+        // Replace '__name__' in the prototype's HTML to
+        // instead be a number based on how many items we have
+        newForm = newForm.replace(/__name__/g, index);
+
+        // increase the index with one for the next item
+        newTagsUl.data('index', index + 1);
+
+        // Display the form in the page in an li, before the "Add a Source" link li
+        var $newFormLi = $('<li></li>').append(newForm);
+        addTagLi.before($newFormLi);
+
+        // add a delete link to the new form
+        pushDeleteBtn($newFormLi, 'tag');
     }
 
     jQuery(document).ready(function() {
         newSourcesUl = $('ul.sources');
+        newTagsUl = $('ul.tags');
 
-        // Push a "Delete" button for all new sources.
+        console.log(newTagsUl);
+
+        // Push a "Delete" button for all new sources and new tags.
         newSourcesUl.find('li').each(function() {
-            pushDeleteBtn($(this));
+            pushDeleteBtn($(this), 'source');
+        });
+        newTagsUl.find('li').each(function() {
+            pushDeleteBtn($(this), 'tag');
         });
 
-        // Push a global "Add a Source" button.
+        // Push a global "Add a Source" and a "Add a Tag" button.
         newSourcesUl.append(addSourceLi);
+        newTagsUl.append(addTagLi);
 
         // count the current form inputs we have (e.g. 2), use that as the new
         // index when inserting a new item (e.g. 2)
         newSourcesUl.data('index', newSourcesUl.find('input').length);
+        newTagsUl.data('index', newTagsUl.find('input').length);
 
         addSourceBtn.on('click', function(e) {
             addSourceForm(newSourcesUl, addSourceLi);
+        });
+        addTagBtn.on('click', function(e) {
+            addTagForm(newTagsUl, addTagLi);
         });
     });
 </script>
