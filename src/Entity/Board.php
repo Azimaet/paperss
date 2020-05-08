@@ -66,11 +66,6 @@ class Board
     private $sources;
 
     /**
-     * @ORM\OneToMany(targetEntity="App\Entity\Filter", mappedBy="board")
-     */
-    private $filters;
-
-    /**
      * @ORM\ManyToMany(targetEntity="App\Entity\Tag", cascade={"persist"}, mappedBy="board")
      */
     private $tags;
@@ -79,7 +74,6 @@ class Board
     {
         $this->comments = new ArrayCollection();
         $this->sources = new ArrayCollection();
-        $this->filters = new ArrayCollection();
         $this->tags = new ArrayCollection();
     }
 
@@ -226,37 +220,6 @@ class Board
         if ($this->sources->contains($source)) {
             $this->sources->removeElement($source);
             $source->removeBoard($this);
-        }
-
-        return $this;
-    }
-
-    /**
-     * @return Collection|Filter[]
-     */
-    public function getFilters(): Collection
-    {
-        return $this->filters;
-    }
-
-    public function addFilter(Filter $filter): self
-    {
-        if (!$this->filters->contains($filter)) {
-            $this->filters[] = $filter;
-            $filter->setBoard($this);
-        }
-
-        return $this;
-    }
-
-    public function removeFilter(Filter $filter): self
-    {
-        if ($this->filters->contains($filter)) {
-            $this->filters->removeElement($filter);
-            // set the owning side to null (unless already changed)
-            if ($filter->getBoard() === $this) {
-                $filter->setBoard(null);
-            }
         }
 
         return $this;
