@@ -37,22 +37,18 @@ class BoardController extends AbstractController
         if($route === "board_create"){
             $originalBoardSlug = null;
             $originalSources = null;
-            $originalTags = null;
-
+            $initialStateTags = null;
             $board = new Board();
         }
         elseif ($route === "board_edit") {
             $originalBoardSlug = $board->getSlug();
             $originalSources = new ArrayCollection();
-            $originalTags = new ArrayCollection();
 
             foreach ($board->getSources() as $source) {
                 $originalSources->add($source);
             }
 
-            foreach ($board->getTags() as $tag) {
-                $originalTags->add($tag);
-            }
+            $initialStateTags = $this->constructInitialTags($board);
         }
 
         // Create Form:
@@ -71,7 +67,7 @@ class BoardController extends AbstractController
 
             $this->sourcesManager($manager, $route, $board, $originalSources);
 
-            $this->tagsManager($manager, $route, $board, $originalTags);
+            $this->tagsManager($manager, $route, $board, $initialStateTags);
 
             // Persist Datas in DDB:
             $manager->persist($board);
@@ -214,7 +210,26 @@ class BoardController extends AbstractController
         }
     }
 
-    private function tagsManager($manager, $route, $board, $originalTags = null){
+    private function constructInitialTags($board){
+        $initialStateTags = [];
+        $hinderTagEdit = [];
+        $initialTags = new ArrayCollection();
+
+        foreach ($board->getTags() as $tag) {
+            $initialTags->add($tag);
+            $hinderTagEdit[] = [
+                "id" => $tag->getId(),
+                "label" => $tag->getLabel(),
+            ];
+        }
+
+        $initialStateTags["initialTags"] = $initialTags;
+        $initialStateTags["hinderTagEdit"] = $hinderTagEdit;
+
+        return $initialStateTags;
+    }
+
+    private function tagsManager($manager, $route, $board, $initialStateTags = null){
         $repoTag = $this->getDoctrine()->getRepository(Tag::class);
         $repoBoard = $this->getDoctrine()->getRepository(Board::class);
         $tags = $board->getTags();
@@ -227,19 +242,28 @@ class BoardController extends AbstractController
                 $tag = $existingTag;
             }
 
+            // Prevent users for editing tags even if it is prohibited by readonly attr form.
+            foreach($initialStateTags["hinderTagEdit"] as $hinderTagEdit){
+                if(($tag->getId() === $hinderTagEdit["id"]) && ($tag->getLabel() !== $hinderTagEdit["label"])){
+                    throw new \RuntimeException('You tried to replace Label "' . $hinderTagEdit["label"] . '" by "' . $tag->getLabel() . '", but it\'s unauthorized. If you want to change it, please delete it and create new tag instead.');
+                }
+            }
+
             $board->addTag($tag);
             $manager->persist($tag);
         }
 
+
         // Remove the relationship between the Tag and the Board, if tag is deleted.
         // Also, if Tag is not anymore relied to any Board, flush it.
         if($route === "board_edit"){
-            foreach ($originalTags as $originalTag) {
-                if(false === $tags->contains($originalTag)) {
-                    $originalTag->getBoard()->removeElement($tag);
+            foreach ($initialStateTags["initialTags"] as $initialTag) {
 
-                    if($originalTag->getBoard()->isEmpty()){
-                        $manager->remove($originalTag);
+                if(false === $tags->contains($initialTag)) {
+                    $initialTag->getBoard()->removeElement($tag);
+
+                    if($initialTag->getBoard()->isEmpty()){
+                        $manager->remove($initialTag);
                     }
                 }
             }
