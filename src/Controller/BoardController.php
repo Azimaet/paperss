@@ -36,18 +36,13 @@ class BoardController extends AbstractController
         // Init needed objects depending of the route:
         if($route === "board_create"){
             $originalBoardSlug = null;
-            $originalSources = null;
+            $initialSources = null;
             $initialStateTags = null;
             $board = new Board();
         }
         elseif ($route === "board_edit") {
             $originalBoardSlug = $board->getSlug();
-            $originalSources = new ArrayCollection();
-
-            foreach ($board->getSources() as $source) {
-                $originalSources->add($source);
-            }
-
+            $initialStateSources = $this->constructInitialSources($board);
             $initialStateTags = $this->constructInitialTags($board);
         }
 
@@ -65,7 +60,7 @@ class BoardController extends AbstractController
                 $board->setOwnerId(1);
             }
 
-            $this->sourcesManager($manager, $route, $board, $originalSources);
+            $this->sourcesManager($manager, $route, $board, $initialStateSources);
 
             $this->tagsManager($manager, $route, $board, $initialStateTags);
 
@@ -112,10 +107,10 @@ class BoardController extends AbstractController
     /*** Utilitaries ***/
     private function filterSlugWords($slug){
         //http://www.bannedwordlist.com/lists/swearWords.xml
-        $bannedWords = ["anal","anus","arse","ass","ballsack","balls","bastard","bitch","biatch","bloody","blowjob","blow job","bollock","bollok","boner","boob","bugger","bum","butt","buttplug","clitoris","cock","coon","crap","cunt","damn","dick","dildo","dyke","fag","feck","fellate","fellatio","felching","fuck","f u c k","fudgepacker","fudge packer","flange","Goddamn","God damn","hell","homo","jerk","jizz","knobend","knob end","labia","lmao","lmfao","muff","nigger","nigga","omg","penis","piss","poop","prick","pube","pussy","queer","scrotum","sex","shit","s hit","sh1t","slut","smegma","spunk","tit","tosser","turd","twat","vagina","wank","whore","wtf"];
-
+        $bannedWords = ["anal","anus","ballsack","bastard","bitch","biatch","blowjob","blow job","bollock","bollok","boob","buttplug","cunt","dildo","fellate","fellatio","fuck","f u c k","jizz","nigger","nigga","penis","piss","poop","pussy","scrotum","shit","s hit","sh1t","slut","smegma","spunk","whore"];
+        
         foreach($bannedWords as $i) {
-            if (stripos($slug, $i) !== false) return false;
+            if (stripos($slug, $i) !== false) dd(stripos($slug, $i));
         }
         return true;
 
@@ -172,42 +167,23 @@ class BoardController extends AbstractController
         $source->setIcon($iconUrl);
     }
 
-    private function sourcesManager($manager, $route, $board, $originalSources = null){
-        $repoSource = $this->getDoctrine()->getRepository(Source::class);
-        $repoBoard = $this->getDoctrine()->getRepository(Board::class);
-        $sources = $board->getSources();
+    private function constructInitialSources($board){
+        $initialStateSources = [];
+        $hinderSourceEdit = [];
+        $initialSources = new ArrayCollection();
 
-        foreach ($sources as $source){
-            // Avoid override database if source already exists by one another board.
-            $existingSource = $repoSource->findOneByUrl($source->getUrl());
-            if(!empty($existingSource)){
-                $board->removeSource($source);
-                $source = $existingSource;
-            } 
-            else {
-                $source->setCreatedAt(new \DateTime());
-            }
-
-            $this->getSourceIcon($source);
-
-            $this->verifySourceUrl($source);
-            $board->addSource($source);
-            $manager->persist($source);
+        foreach ($board->getSources() as $source) {
+            $initialSources->add($source);
+            $hinderSourceEdit[] = [
+                "id" => $source->getId(),
+                "url" => $source->getUrl(),
+            ];
         }
 
-        // Remove the relationship between the Source and the Board, if source is deleted.
-        // Also, if Source is not anymore relied to any Board, flush it.
-        if($route === "board_edit"){
-            foreach ($originalSources as $originalSource) {
-                if(false === $sources->contains($originalSource)) {
-                    $originalSource->getBoard()->removeElement($board);
+        $initialStateSources["initialSources"] = $initialSources;
+        $initialStateSources["hinderSourceEdit"] = $hinderSourceEdit;
 
-                    if($originalSource->getBoard()->isEmpty()){
-                        $manager->remove($originalSource);
-                    }
-                }
-            }
-        }
+        return $initialStateSources;
     }
 
     private function constructInitialTags($board){
@@ -229,9 +205,55 @@ class BoardController extends AbstractController
         return $initialStateTags;
     }
 
+    private function sourcesManager($manager, $route, $board, $initialStateSources = null){
+        $repoSource = $this->getDoctrine()->getRepository(Source::class);
+        $sources = $board->getSources();
+
+        foreach ($sources as $source){
+            // Avoid override database if source already exists by one another board.
+            $existingSource = $repoSource->findOneByUrl($source->getUrl());
+            if(!empty($existingSource)){
+                $board->removeSource($source);
+                $source = $existingSource;
+            } 
+            else {
+                $source->setCreatedAt(new \DateTime());
+            }
+
+            // Prevent users for editing sources even if it is prohibited by readonly attr form. (in the case the new source is not existing in ddb)
+            if(isset($initialStateSources) && !empty($initialStateSources)){
+                foreach($initialStateSources["hinderSourceEdit"] as $hinderSourceEdit){
+                    if(($source->getUrl() === $hinderSourceEdit["id"]) && ($source->getUrl() !== $hinderSourceEdit["url"])){
+                        throw new \RuntimeException('You tried to replace Url "' . $hinderSourceEdit["url"] . '" by "' . $source->getUrl() . '", but it\'s unauthorized. If you want to change it, please delete it and create new source instead.');
+                    }
+                }
+            }
+
+            $this->getSourceIcon($source);
+
+            $this->verifySourceUrl($source);
+
+            $board->addSource($source);
+            $manager->persist($source);
+        }
+
+        // Remove the relationship between the Source and the Board, if source is deleted.
+        // Also, if Source is not anymore relied to any Board, flush it.
+        if($route === "board_edit"){
+            foreach ($initialStateSources["initialSources"] as $initialSource) {
+                if(false === $sources->contains($initialSource)) {
+                    $initialSource->getBoard()->removeElement($board);
+
+                    if($initialSource->getBoard()->isEmpty()){
+                        $manager->remove($initialSource);
+                    }
+                }
+            }
+        }
+    }
+
     private function tagsManager($manager, $route, $board, $initialStateTags = null){
         $repoTag = $this->getDoctrine()->getRepository(Tag::class);
-        $repoBoard = $this->getDoctrine()->getRepository(Board::class);
         $tags = $board->getTags();
 
         foreach($tags as $tag){
@@ -242,10 +264,12 @@ class BoardController extends AbstractController
                 $tag = $existingTag;
             }
 
-            // Prevent users for editing tags even if it is prohibited by readonly attr form.
-            foreach($initialStateTags["hinderTagEdit"] as $hinderTagEdit){
-                if(($tag->getId() === $hinderTagEdit["id"]) && ($tag->getLabel() !== $hinderTagEdit["label"])){
-                    throw new \RuntimeException('You tried to replace Label "' . $hinderTagEdit["label"] . '" by "' . $tag->getLabel() . '", but it\'s unauthorized. If you want to change it, please delete it and create new tag instead.');
+            // Prevent users for editing tags even if it is prohibited by readonly attr form. (in the case the new tag is not existing in ddb)
+            if(isset($initialStateTags) && !empty($initialStateTags)){
+                foreach($initialStateTags["hinderTagEdit"] as $hinderTagEdit){
+                    if(($tag->getId() === $hinderTagEdit["id"]) && ($tag->getLabel() !== $hinderTagEdit["label"])){
+                        throw new \RuntimeException('You tried to replace Label "' . $hinderTagEdit["label"] . '" by "' . $tag->getLabel() . '", but it\'s unauthorized. If you want to change it, please delete it and create new tag instead.');
+                    }
                 }
             }
 
@@ -258,9 +282,8 @@ class BoardController extends AbstractController
         // Also, if Tag is not anymore relied to any Board, flush it.
         if($route === "board_edit"){
             foreach ($initialStateTags["initialTags"] as $initialTag) {
-
                 if(false === $tags->contains($initialTag)) {
-                    $initialTag->getBoard()->removeElement($tag);
+                    $initialTag->getBoard()->removeElement($board);
 
                     if($initialTag->getBoard()->isEmpty()){
                         $manager->remove($initialTag);
