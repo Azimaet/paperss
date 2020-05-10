@@ -9,28 +9,49 @@ use App\Form\BoardType;
 use App\Factory\BoardContentFactory;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Security\Core\Security;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Component\String\Slugger\AsciiSlugger;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 class BoardController extends AbstractController
 {
-    /*** Routes ***/
+    /**
+     * @var Security
+     */
+    private $security;
+
+    public function __construct(Security $security)
+    {
+       $this->security = $security;
+    }
 
     /**
      * @Route ("/board/new" , name="board_create")
      * @Route ("/board/{slug}/edit" , name="board_edit")
      */
-    public function boardManage(Board $board = null, Request $request, EntityManagerInterface $manager)
+    public function boardManage(Board $board = null, Request $request, EntityManagerInterface $manager, Security $security)
     {
-        // Get route context:
+        // Get route context & redirects:
         $route = $request->get('_route');
 
-        if($route === "board_edit" && !$board){
-            return $this->redirectToRoute('board_create');
+        if ($route === "board_edit"){
+            $user = $this->security->getUser();
+            if(is_null($user)){
+                return $this->redirectToRoute('security_login');
+            }
+
+            if(!$board){
+                return $this->redirectToRoute('board_create');
+            }
+
+            if($user->getId() !== $board->getOwnerId()){
+                throw new \RuntimeException('You don\'t have the permission to delete this Board.');
+            }
         }
 
         // Init needed objects depending of the route:
@@ -64,9 +85,12 @@ class BoardController extends AbstractController
 
             $this->tagsManager($manager, $route, $board, $initialStateTags);
 
-            // Persist Datas in DDB:
             $manager->persist($board);
             $manager->flush();
+
+            $this->removeOrphanedSources($request, $manager);
+
+            $this->removeOrphanedTags($request, $manager);
 
             return $this->redirectToRoute('board_show', [
                 'slug' => $board->getSlug()
@@ -75,8 +99,33 @@ class BoardController extends AbstractController
 
         return $this->render('board/create.html.twig', [
             'formBoard' => $form->createView(),
+            'board' => $board,
             'route' => $route
         ]);
+    }
+
+    /**
+     * @Route ("/board/{id}/delete" , name="board_delete")
+     * @Method({"DELETE"})
+     */
+    public function boardDelete(Board $board, Request $request, EntityManagerInterface $manager)
+    {
+        if(!$board){
+            throw new \RuntimeException('Board dosn\'t exist. You can\'t remove it.');
+        }
+        $user = $this->security->getUser();
+        if($user->getId() !== $board->getOwnerId()){
+            throw new \RuntimeException('You don\'t have the permission to delete this Board.');
+        }
+        
+        $manager->remove($board);
+        $manager->flush();
+        
+        $this->removeOrphanedSources($request, $manager);
+        $this->removeOrphanedTags($request, $manager);
+
+        $response = new Response();
+        $response->send();
     }
 
     /**
@@ -105,6 +154,30 @@ class BoardController extends AbstractController
 
 
     /*** Utilitaries ***/
+    public function removeOrphanedSources(Request $request, EntityManagerInterface $manager){
+        $sources = $this->getDoctrine()->getRepository(Source::class)->findAll();
+
+        foreach($sources as $source){
+            if($source->getBoard()->isEmpty()){
+                $manager->remove($source);
+            }
+        }
+
+        $manager->flush();
+    }
+
+    public function removeOrphanedTags(Request $request, EntityManagerInterface $manager){
+        $tags = $this->getDoctrine()->getRepository(Tag::class)->findAll();
+
+        foreach($tags as $tag){
+            if($tag->getBoard()->isEmpty()){
+                $manager->remove($tag);
+            }
+        }
+
+        $manager->flush();
+    }
+
     private function filterSlugWords($slug){
         //http://www.bannedwordlist.com/lists/swearWords.xml
         $bannedWords = ["anal","anus","ballsack","bastard","bitch","biatch","blowjob","blow job","bollock","bollok","boob","buttplug","cunt","dildo","fellate","fellatio","fuck","f u c k","jizz","nigger","nigga","penis","piss","poop","pussy","scrotum","shit","s hit","sh1t","slut","smegma","spunk","whore"];
@@ -132,13 +205,13 @@ class BoardController extends AbstractController
 
         if(!$board->getId()){
             if(!empty($existingBoard)){
-                throw new \RuntimeException('Slug is already exists in Database. Please find one another.');
+                throw new \RuntimeException('Slug is already exist in Database. Please find one another.');
             }
         }
         else {
             if ($originalBoardSlug !== $board->getSlug()){
                 if(!empty($existingBoard)){
-                    throw new \RuntimeException('Slug is already exists in Database. Please find one another.');
+                    throw new \RuntimeException('Slug is already exist in Database. Please find one another.');
                 }
             }
         }
@@ -210,7 +283,7 @@ class BoardController extends AbstractController
         $sources = $board->getSources();
 
         foreach ($sources as $source){
-            // Avoid override database if source already exists by one another board.
+            // Avoid override database if source already exist by one another board.
             $existingSource = $repoSource->findOneByUrl($source->getUrl());
             if(!empty($existingSource)){
                 $board->removeSource($source);
@@ -238,15 +311,10 @@ class BoardController extends AbstractController
         }
 
         // Remove the relationship between the Source and the Board, if source is deleted.
-        // Also, if Source is not anymore relied to any Board, flush it.
         if($route === "board_edit"){
             foreach ($initialStateSources["initialSources"] as $initialSource) {
                 if(false === $sources->contains($initialSource)) {
                     $initialSource->getBoard()->removeElement($board);
-
-                    if($initialSource->getBoard()->isEmpty()){
-                        $manager->remove($initialSource);
-                    }
                 }
             }
         }
@@ -257,7 +325,7 @@ class BoardController extends AbstractController
         $tags = $board->getTags();
 
         foreach($tags as $tag){
-            // Avoid override database if tag already exists by one another board.
+            // Avoid override database if tag already exist by one another board.
             $existingTag = $repoTag->findOneByLabel($tag->getLabel());
             if(!empty($existingTag)){
                 $board->removeTag($tag);
@@ -279,15 +347,10 @@ class BoardController extends AbstractController
 
 
         // Remove the relationship between the Tag and the Board, if tag is deleted.
-        // Also, if Tag is not anymore relied to any Board, flush it.
         if($route === "board_edit"){
             foreach ($initialStateTags["initialTags"] as $initialTag) {
                 if(false === $tags->contains($initialTag)) {
                     $initialTag->getBoard()->removeElement($board);
-
-                    if($initialTag->getBoard()->isEmpty()){
-                        $manager->remove($initialTag);
-                    }
                 }
             }
         }

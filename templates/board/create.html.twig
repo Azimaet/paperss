@@ -45,6 +45,8 @@
         </button>
 
     {{ form_end(formBoard) }}
+
+    <a href="#" data-id="{{ board.id }}" id="delete_board" class="btn btn-danger">Delete Board</a>
     
 </div>
 {% endblock %}
@@ -53,6 +55,20 @@
 
 
 {% block javascripts %}
+<script>
+    let deleteBtn = document.getElementById('delete_board');
+    
+    deleteBtn.addEventListener('click', e => {
+        if(confirm('Are you sure to remove Board?')){
+            const id = e.target.getAttribute('data-id');
+
+            // Fetch request to the Backend:
+            fetch(`/board/${id}/delete`, {
+                method: 'DELETE'
+            }).then(res => window.location.reload());
+        }
+    });
+</script>
 <script>
     var newSourcesUl;
     var exsSourcesList;
