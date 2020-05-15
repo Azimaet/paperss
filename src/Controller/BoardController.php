@@ -39,11 +39,12 @@ class BoardController extends AbstractController
         // Get route context & redirects:
         $route = $request->get('_route');
 
+        $user = $this->security->getUser();
+        if(is_null($user)){
+            return $this->redirectToRoute('security_login');
+        }
+
         if ($route === "board_edit"){
-            $user = $this->security->getUser();
-            if(is_null($user)){
-                return $this->redirectToRoute('security_login');
-            }
 
             if(!$board){
                 return $this->redirectToRoute('board_create');
@@ -56,12 +57,6 @@ class BoardController extends AbstractController
 
         // Init needed objects depending of the route:
         if($route === "board_create"){
-            $user = $this->security->getUser();
-
-            if ($user === null){
-                return $this->redirectToRoute('security_login');
-            }
-
             $originalBoardSlug = null;
             $initialStateSources = null;
             $initialStateTags = null;
@@ -84,7 +79,7 @@ class BoardController extends AbstractController
             if($route === "board_create"){
                 $board->setCreatedAt(new \DateTime());
                 $board->setScore(0);
-                $board->setOwnerId(1);
+                $board->setOwnerId($user->getId());
             }
 
             $this->sourcesManager($manager, $route, $board, $initialStateSources);
