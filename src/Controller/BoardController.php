@@ -50,14 +50,20 @@ class BoardController extends AbstractController
             }
 
             if($user->getId() !== $board->getOwnerId()){
-                throw new \RuntimeException('You don\'t have the permission to delete this Board.');
+                throw new \RuntimeException('You don\'t have the permission to edit this Board.');
             }
         }
 
         // Init needed objects depending of the route:
         if($route === "board_create"){
+            $user = $this->security->getUser();
+
+            if ($user === null){
+                return $this->redirectToRoute('security_login');
+            }
+
             $originalBoardSlug = null;
-            $initialSources = null;
+            $initialStateSources = null;
             $initialStateTags = null;
             $board = new Board();
         }
