@@ -6,7 +6,7 @@ use App\Entity\Tag;
 use App\Entity\Board;
 use App\Entity\Source;
 use App\Form\BoardType;
-use App\Factory\BoardContentFactory;
+use App\Renderer\BoardRenderer;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Security\Core\Security;
@@ -141,13 +141,13 @@ class BoardController extends AbstractController
             throw new \RuntimeException('The board dosn\'t exist. Verify url');
         }
 
-        $factory = new BoardContentFactory($board);
+        $renderer = new BoardRenderer($board);
 
         return $this->render('board/board.html.twig', [
             'controller_name' => 'BoardController',
             'board' => $board,
-            'items' => $factory->items,
-            'languages' => $factory->languages,
+            'items' => $renderer->items,
+            'languages' => $renderer->languages,
             'slug' => $slug,
         ]);
     }

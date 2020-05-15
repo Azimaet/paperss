@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Factory;
+namespace App\Renderer;
 
-class BoardContentFactory
+class BoardRenderer
 {
     private $board;
 
