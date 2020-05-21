@@ -45,7 +45,6 @@ class BoardController extends AbstractController
         }
 
         if ($route === "board_edit"){
-
             if(!$board){
                 return $this->redirectToRoute('board_create');
             }
@@ -345,7 +344,6 @@ class BoardController extends AbstractController
             $board->addTag($tag);
             $manager->persist($tag);
         }
-
 
         // Remove the relationship between the Tag and the Board, if tag is deleted.
         if($route === "board_edit"){
