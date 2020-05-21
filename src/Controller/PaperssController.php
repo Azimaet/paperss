@@ -8,16 +8,6 @@ use Symfony\Component\Routing\Annotation\Route;
 class PaperssController extends AbstractController
 {
     /**
-     * @Route("/paperss", name="paperss")
-     */
-    public function index()
-    {
-        return $this->render('paperss/index.html.twig', [
-            'controller_name' => 'PaperssController',
-        ]);
-    }
-
-    /**
      * @Route("/", name="home")
      */
     public function home(){
