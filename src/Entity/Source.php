@@ -34,14 +34,30 @@ class Source
     private $icon;
 
     /**
-     * @ORM\ManyToMany(targetEntity="App\Entity\Board", inversedBy="sources")
+     * @ORM\ManyToOne(targetEntity="App\Entity\Board", inversedBy="sources")
+     * @ORM\JoinColumn(nullable=false)
      */
     private $board;
 
-    public function __construct()
-    {
-        $this->board = new ArrayCollection();
-    }
+    /**
+     * @ORM\Column(type="array", nullable=true)
+     */
+    private $filterMustContain = [];
+
+    /**
+     * @ORM\Column(type="array", nullable=true)
+     */
+    private $filterMustExclude = [];
+
+    /**
+     * @ORM\Column(type="integer", nullable=true)
+     */
+    private $filterLimitDays;
+
+    /**
+     * @ORM\Column(type="integer", nullable=true)
+     */
+    private $filterLimitItems;
 
     public function getId(): ?int
     {
@@ -84,28 +100,63 @@ class Source
         return $this;
     }
 
-    /**
-     * @return Collection|Board[]
-     */
-    public function getBoard(): Collection
+
+    public function getBoard(): ?int
     {
         return $this->board;
     }
 
-    public function addBoard(Board $board): self
+    public function setBoard(int $board): self
     {
-        if (!$this->board->contains($board)) {
-            $this->board[] = $board;
-        }
+        $this->board = $board;
 
         return $this;
     }
 
-    public function removeBoard(Board $board): self
+    public function getFilterMustContain(): ?array
     {
-        if ($this->board->contains($board)) {
-            $this->board->removeElement($board);
-        }
+        return $this->filterMustContain;
+    }
+
+    public function setFilterMustContain(?array $filterMustContain): self
+    {
+        $this->filterMustContain = $filterMustContain;
+
+        return $this;
+    }
+
+    public function getFilterMustExclude(): ?array
+    {
+        return $this->filterMustExclude;
+    }
+
+    public function setFilterMustExclude(?array $filterMustExclude): self
+    {
+        $this->filterMustExclude = $filterMustExclude;
+
+        return $this;
+    }
+
+    public function getFilterLimitDays(): ?int
+    {
+        return $this->filterLimitDays;
+    }
+
+    public function setFilterLimitDays(?int $filterLimitDays): self
+    {
+        $this->filterLimitDays = $filterLimitDays;
+
+        return $this;
+    }
+
+    public function getFilterLimitItems(): ?int
+    {
+        return $this->filterLimitItems;
+    }
+
+    public function setFilterLimitItems(?int $filterLimitItems): self
+    {
+        $this->filterLimitItems = $filterLimitItems;
 
         return $this;
     }

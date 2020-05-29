@@ -56,7 +56,7 @@ class Board
     private $content;
 
     /**
-     * @ORM\ManyToMany(targetEntity="App\Entity\Source", cascade={"persist"}, mappedBy="board")
+     * @ORM\OneToMany(targetEntity="App\Entity\Source", mappedBy="board")
      */
     private $sources;
 
