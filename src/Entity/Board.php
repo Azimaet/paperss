@@ -60,9 +60,15 @@ class Board
      */
     private $tags;
 
+    /**
+     * @ORM\OneToMany(targetEntity="App\Entity\Source", mappedBy="board", orphanRemoval=true)
+     */
+    private $sources;
+
     public function __construct()
     {
         $this->tags = new ArrayCollection();
+        $this->sources = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -177,6 +183,37 @@ class Board
         if ($this->tags->contains($tag)) {
             $this->tags->removeElement($tag);
             $tag->removeBoard($this);
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Source[]
+     */
+    public function getSources(): Collection
+    {
+        return $this->sources;
+    }
+
+    public function addSource(Source $source): self
+    {
+        if (!$this->sources->contains($source)) {
+            $this->sources[] = $source;
+            $source->setBoard($this);
+        }
+
+        return $this;
+    }
+
+    public function removeSource(Source $source): self
+    {
+        if ($this->sources->contains($source)) {
+            $this->sources->removeElement($source);
+            // set the owning side to null (unless already changed)
+            if ($source->getBoard() === $this) {
+                $source->setBoard(null);
+            }
         }
 
         return $this;
