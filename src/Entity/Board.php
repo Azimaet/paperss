@@ -56,18 +56,12 @@ class Board
     private $content;
 
     /**
-     * @ORM\OneToMany(targetEntity="App\Entity\Source", mappedBy="board")
-     */
-    private $sources;
-
-    /**
      * @ORM\ManyToMany(targetEntity="App\Entity\Tag", cascade={"persist"}, mappedBy="board")
      */
     private $tags;
 
     public function __construct()
     {
-        $this->sources = new ArrayCollection();
         $this->tags = new ArrayCollection();
     }
 
@@ -156,34 +150,6 @@ class Board
     public function setContent(?string $content): self
     {
         $this->content = $content;
-
-        return $this;
-    }
-
-    /**
-     * @return Collection|Source[]
-     */
-    public function getSources(): Collection
-    {
-        return $this->sources;
-    }
-
-    public function addSource(Source $source): self
-    {
-        if (!$this->sources->contains($source)) {
-            $this->sources[] = $source;
-            $source->addBoard($this);
-        }
-
-        return $this;
-    }
-
-    public function removeSource(Source $source): self
-    {
-        if ($this->sources->contains($source)) {
-            $this->sources->removeElement($source);
-            $source->removeBoard($this);
-        }
 
         return $this;
     }
