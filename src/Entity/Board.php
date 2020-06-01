@@ -65,6 +65,11 @@ class Board
      */
     private $sources;
 
+    /**
+     * @ORM\Column(type="datetime", nullable=true)
+     */
+    private $modifiedAt;
+
     public function __construct()
     {
         $this->tags = new ArrayCollection();
@@ -215,6 +220,18 @@ class Board
                 $source->setBoard(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getModifiedAt(): ?\DateTimeInterface
+    {
+        return $this->modifiedAt;
+    }
+
+    public function setModifiedAt(?\DateTimeInterface $modifiedAt): self
+    {
+        $this->modifiedAt = $modifiedAt;
 
         return $this;
     }

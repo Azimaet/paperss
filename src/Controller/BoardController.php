@@ -61,7 +61,7 @@ class BoardController extends AbstractController
             $initialStateTags = null;
             $board = new Board();
         }
-        elseif ($route === "board_edit") {
+        elseif($route === "board_edit") {
             $originalBoardSlug = $board->getSlug();
             $initialStateSources = $this->constructInitialSources($board);
             $initialStateTags = $this->constructInitialTags($board);
@@ -79,6 +79,9 @@ class BoardController extends AbstractController
                 $board->setCreatedAt(new \DateTime());
                 $board->setScore(0);
                 $board->setOwnerId($user->getId());
+            } 
+            elseif($route === "board_edit"){
+                $board->setModifiedAt(new \DateTime());
             }
 
             $this->sourcesManager($manager, $route, $board, $initialStateSources);
