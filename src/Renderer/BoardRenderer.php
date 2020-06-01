@@ -37,10 +37,17 @@ class BoardRenderer
     }
 
     private function getItems($board){
-        $items = [];
+        $globalItems = [];
 
         foreach($board->getSources() as $source){
             $itemsXml = simplexml_load_file($source->getUrl())->channel->item;
+            $items = [];
+
+            $limitItems = $source->getFilterLimitItems();
+
+            if($limitItems === 0){
+                $limitItems = null; 
+            }
 
             foreach($itemsXml as $itemXml){
                 $pushable = true;
@@ -82,9 +89,16 @@ class BoardRenderer
                     array_push($items, $item);
                 }
             }
+
+            usort($items, array ($this, "sortByDate"));
+
+            $items = array_slice($items, 0, $limitItems);
+
+            $globalItems = array_merge($globalItems, $items);
         }
 
-        usort($items, array ($this, "sortByDate"));
-        return $items;
+        usort($globalItems, array ($this, "sortByDate"));
+
+        return $globalItems;
     }
 }

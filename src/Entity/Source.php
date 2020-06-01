@@ -44,11 +44,6 @@ class Source
     /**
      * @ORM\Column(type="integer", nullable=true)
      */
-    private $filterLimitDays;
-
-    /**
-     * @ORM\Column(type="integer", nullable=true)
-     */
     private $filterLimitItems;
 
     /**
@@ -118,18 +113,6 @@ class Source
     public function setFilterMustExclude(?array $filterMustExclude): self
     {
         $this->filterMustExclude = $filterMustExclude;
-
-        return $this;
-    }
-
-    public function getFilterLimitDays(): ?int
-    {
-        return $this->filterLimitDays;
-    }
-
-    public function setFilterLimitDays(?int $filterLimitDays): self
-    {
-        $this->filterLimitDays = $filterLimitDays;
 
         return $this;
     }

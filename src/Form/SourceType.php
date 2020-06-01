@@ -9,6 +9,7 @@ use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Form\Extension\Core\Type\UrlType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
+use Symfony\Component\Form\Extension\Core\Type\RangeType;
 
 class SourceType extends AbstractType
 {
@@ -22,8 +23,13 @@ class SourceType extends AbstractType
                     'placeholder' => 'https://domain.com/subdomain.xml',
                 ]
             ])
-            ->add('filterLimitDays')
-            ->add('filterLimitItems')
+            ->add('filterLimitItems', RangeType::class, [
+                'required' => true,
+                'attr' => [
+                    'min' => 0, 
+                    'max' => 100
+                ]
+            ])
             ->add('filterMustContain', TextType::class, [
                 'required' => false,
             ])
