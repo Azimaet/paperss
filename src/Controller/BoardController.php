@@ -88,8 +88,6 @@ class BoardController extends AbstractController
             $manager->persist($board);
             $manager->flush();
 
-            $this->removeOrphanedSources($request, $manager);
-
             $this->removeOrphanedTags($request, $manager);
 
             return $this->redirectToRoute('board_show', [
@@ -121,7 +119,6 @@ class BoardController extends AbstractController
         $manager->remove($board);
         $manager->flush();
         
-        $this->removeOrphanedSources($request, $manager);
         $this->removeOrphanedTags($request, $manager);
 
         $response = new Response();
@@ -154,18 +151,6 @@ class BoardController extends AbstractController
 
 
     /*** Utilitaries ***/
-    public function removeOrphanedSources(Request $request, EntityManagerInterface $manager){
-        $sources = $this->getDoctrine()->getRepository(Source::class)->findAll();
-
-        foreach($sources as $source){
-            if($source->getBoard()->isEmpty()){
-                $manager->remove($source);
-            }
-        }
-
-        $manager->flush();
-    }
-
     public function removeOrphanedTags(Request $request, EntityManagerInterface $manager){
         $tags = $this->getDoctrine()->getRepository(Tag::class)->findAll();
 
@@ -283,15 +268,8 @@ class BoardController extends AbstractController
         $sources = $board->getSources();
 
         foreach ($sources as $source){
-            // Avoid override database if source already exist by one another board.
-            $existingSource = $repoSource->findOneByUrl($source->getUrl());
-            if(!empty($existingSource)){
-                $board->removeSource($source);
-                $source = $existingSource;
-            } 
-            else {
-                $source->setCreatedAt(new \DateTime());
-            }
+            
+            $source->setCreatedAt(new \DateTime());
 
             // Prevent users for editing sources even if it is prohibited by readonly attr form. (in the case the new source is not existing in ddb)
             if(isset($initialStateSources) && !empty($initialStateSources)){
@@ -308,15 +286,6 @@ class BoardController extends AbstractController
 
             $board->addSource($source);
             $manager->persist($source);
-        }
-
-        // Remove the relationship between the Source and the Board, if source is deleted.
-        if($route === "board_edit"){
-            foreach ($initialStateSources["initialSources"] as $initialSource) {
-                if(false === $sources->contains($initialSource)) {
-                    $initialSource->getBoard()->removeElement($board);
-                }
-            }
         }
     }
 
