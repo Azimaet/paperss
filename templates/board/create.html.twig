@@ -24,7 +24,6 @@
             {% for source in formBoard.sources %}
             <li>
                 {{ form_widget(source.url) }}
-                {{ form_widget(source.filterLimitDays) }}
                 {{ form_widget(source.filterLimitItems) }}
                 {{ form_widget(source.filterMustContain) }}
                 {{ form_widget(source.filterMustExclude) }}
