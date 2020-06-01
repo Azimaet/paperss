@@ -63,7 +63,7 @@ class BoardController extends AbstractController
         }
         elseif($route === "board_edit") {
             $originalBoardSlug = $board->getSlug();
-            $initialStateSources = $this->constructInitialSources($board);
+            // $initialStateSources = $this->constructInitialSources($board);
             $initialStateTags = $this->constructInitialTags($board);
         }
 
@@ -84,7 +84,7 @@ class BoardController extends AbstractController
                 $board->setModifiedAt(new \DateTime());
             }
 
-            $this->sourcesManager($manager, $route, $board, $initialStateSources);
+            $this->sourcesManager($manager, $route, $board);
 
             $this->tagsManager($manager, $route, $board, $initialStateTags);
 
@@ -228,25 +228,6 @@ class BoardController extends AbstractController
         $source->setIcon($iconUrl);
     }
 
-    private function constructInitialSources($board){
-        $initialStateSources = [];
-        $hinderSourceEdit = [];
-        $initialSources = new ArrayCollection();
-
-        foreach ($board->getSources() as $source) {
-            $initialSources->add($source);
-            $hinderSourceEdit[] = [
-                "id" => $source->getId(),
-                "url" => $source->getUrl(),
-            ];
-        }
-
-        $initialStateSources["initialSources"] = $initialSources;
-        $initialStateSources["hinderSourceEdit"] = $hinderSourceEdit;
-
-        return $initialStateSources;
-    }
-
     private function constructInitialTags($board){
         $initialStateTags = [];
         $hinderTagEdit = [];
@@ -266,22 +247,12 @@ class BoardController extends AbstractController
         return $initialStateTags;
     }
 
-    private function sourcesManager($manager, $route, $board, $initialStateSources = null){
+    private function sourcesManager($manager, $route, $board){
         $repoSource = $this->getDoctrine()->getRepository(Source::class);
         $sources = $board->getSources();
 
         foreach ($sources as $source){
-            
             $source->setCreatedAt(new \DateTime());
-
-            // Prevent users for editing sources even if it is prohibited by readonly attr form. (in the case the new source is not existing in ddb)
-            if(isset($initialStateSources) && !empty($initialStateSources)){
-                foreach($initialStateSources["hinderSourceEdit"] as $hinderSourceEdit){
-                    if(($source->getUrl() === $hinderSourceEdit["id"]) && ($source->getUrl() !== $hinderSourceEdit["url"])){
-                        throw new \RuntimeException('You tried to replace Url "' . $hinderSourceEdit["url"] . '" by "' . $source->getUrl() . '", but it\'s unauthorized. If you want to change it, please delete it and create new source instead.');
-                    }
-                }
-            }
 
             $this->getSourceIcon($source);
 

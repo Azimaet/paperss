@@ -23,7 +23,7 @@
         <ul class="sources" data-prototype="{{ form_widget(formBoard.sources.vars.prototype)|e('html_attr') }}">
             {% for source in formBoard.sources %}
             <li>
-                {{ form_widget(source.url, { 'attr': {'readonly':'readonly'} }) }}
+                {{ form_widget(source.url) }}
             </li>
             {% endfor %}
         </ul>
