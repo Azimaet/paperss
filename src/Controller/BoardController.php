@@ -88,6 +88,7 @@ class BoardController extends AbstractController
 
             $this->tagsManager($manager, $route, $board, $initialStateTags);
 
+
             $manager->persist($board);
             $manager->flush();
 
@@ -228,6 +229,16 @@ class BoardController extends AbstractController
         $source->setIcon($iconUrl);
     }
 
+    private function undoEmptyFiltersArray($source){
+
+        $containTrimmedArray = array_filter($source->getFilterMustContain());
+        $source->setFilterMustContain($containTrimmedArray);
+
+        $excludeTrimmedArray = array_filter($source->getFilterMustExclude());
+        $source->setFilterMustExclude($excludeTrimmedArray);
+
+    }
+
     private function constructInitialTags($board){
         $initialStateTags = [];
         $hinderTagEdit = [];
@@ -257,6 +268,8 @@ class BoardController extends AbstractController
             $this->getSourceIcon($source);
 
             $this->verifySourceUrl($source);
+
+            $this->undoEmptyFiltersArray($source);
 
             $board->addSource($source);
             $manager->persist($source);

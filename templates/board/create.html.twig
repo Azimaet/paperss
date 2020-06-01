@@ -19,11 +19,15 @@
         {{ form_row(formBoard.public)}}
         {{ form_row(formBoard.slug, {'attr' : { 'placeholder' : 'Domaine de la Board'}}) }}
         {{ form_row(formBoard.content, {'attr' : { 'placeholder' : 'Vos flux RSS'}}) }}
-        
+
         <ul class="sources" data-prototype="{{ form_widget(formBoard.sources.vars.prototype)|e('html_attr') }}">
             {% for source in formBoard.sources %}
             <li>
                 {{ form_widget(source.url) }}
+                {{ form_widget(source.filterLimitDays) }}
+                {{ form_widget(source.filterLimitItems) }}
+                {{ form_widget(source.filterMustContain) }}
+                {{ form_widget(source.filterMustExclude) }}
             </li>
             {% endfor %}
         </ul>

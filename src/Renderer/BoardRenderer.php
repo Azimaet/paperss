@@ -43,6 +43,7 @@ class BoardRenderer
             $itemsXml = simplexml_load_file($source->getUrl())->channel->item;
 
             foreach($itemsXml as $itemXml){
+                $pushable = true;
                 $item = [];
 
                 $item["icon"] = $source->getIcon();
@@ -60,15 +61,30 @@ class BoardRenderer
                 if(isset($itemXml->pubDate) && !empty($itemXml->pubDate)){
                     $item["date"] = date("Y-m-d H:i:s", strtotime($itemXml->pubDate));
                 }
+
+                if(null !== $source->getFilterMustContain() && !empty($source->getFilterMustContain())){
+                    foreach($source->getFilterMustContain() as $contain){
+                        if (false === strpos(strtolower($item["content"]) , strtolower($contain) )){
+                            $pushable = false;
+                        }
+                    }
+                }
+
+                if(null !== $source->getFilterMustExclude() && !empty($source->getFilterMustExclude())){
+                    foreach($source->getFilterMustExclude() as $exclude){
+                        if (false !== strpos(strtolower($item["content"]) , strtolower($exclude) )){
+                            $pushable = false;
+                        }
+                    }
+                }
                 
-                array_push($items, $item);
+                if ($pushable === true){
+                    array_push($items, $item);
+                }
             }
         }
 
         usort($items, array ($this, "sortByDate"));
-
         return $items;
     }
-
-    /* Utilitaries */
 }

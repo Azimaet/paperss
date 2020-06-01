@@ -4,9 +4,11 @@ namespace App\Form;
 
 use App\Entity\Source;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\CallbackTransformer;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Form\Extension\Core\Type\UrlType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
 
 class SourceType extends AbstractType
 {
@@ -20,7 +22,51 @@ class SourceType extends AbstractType
                     'placeholder' => 'https://domain.com/subdomain.xml',
                 ]
             ])
+            ->add('filterLimitDays')
+            ->add('filterLimitItems')
+            ->add('filterMustContain', TextType::class, [
+                'required' => false,
+            ])
+            ->add('filterMustExclude', TextType::class, [
+                'required' => false,
+            ])
         ;
+
+        $builder
+            ->get('filterMustContain')
+            ->addModelTransformer(new CallbackTransformer(
+                function($filterMustContainArray){
+
+                    if (is_null($filterMustContainArray)){
+                        $filterMustContainArray = [];
+                    }
+                    // Transform the Array to a String:
+                    return implode(', ', $filterMustContainArray);
+                },
+                function ($filterMustContainString){
+                    // Transform the string back to an array:
+                    return explode(', ', $filterMustContainString);
+                }
+            ))
+        ;
+
+        $builder
+        ->get('filterMustExclude')
+        ->addModelTransformer(new CallbackTransformer(
+            function($filterMustExludeArray){
+
+                if (is_null($filterMustExludeArray)){
+                    $filterMustExludeArray = [];
+                }
+                // Transform the Array to a String:
+                return implode(', ', $filterMustExludeArray);
+            },
+            function ($filterMustExcludeString){
+                // Transform the string back to an array:
+                return explode(', ', $filterMustExcludeString);
+            }
+        ))
+    ;   
     }
 
     public function configureOptions(OptionsResolver $resolver)
