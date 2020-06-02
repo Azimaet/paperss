@@ -134,12 +134,20 @@ class BoardController extends AbstractController
      */
     public function boardShow($slug)
     {
+        $user = $this->security->getUser();
+
         $repo = $this->getDoctrine()->getRepository(Board::class);
 
         $board = $repo->findOneBySlug($slug);
 
         if(empty($board)){
             throw new \RuntimeException('The board dosn\'t exist. Verify url');
+        }
+
+        if($board->getPrivate() === true){
+            if(is_null($user) || $user->getId() !== $board->getOwnerId()){
+                throw new \RuntimeException('This board is private. Only the Owner can read it.');
+            }
         }
 
         $renderer = new BoardRenderer($board);
