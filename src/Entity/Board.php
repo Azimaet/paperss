@@ -38,7 +38,7 @@ class Board
     /**
      * @ORM\Column(type="boolean")
      */
-    private $public;
+    private $private;
 
     /**
      * @ORM\Column(type="datetime", nullable=true)
@@ -117,14 +117,14 @@ class Board
         return $this;
     }
 
-    public function getPublic(): ?bool
+    public function getPrivate(): ?bool
     {
-        return $this->public;
+        return $this->private;
     }
 
-    public function setPublic(bool $public): self
+    public function setPrivate(bool $private): self
     {
-        $this->public = $public;
+        $this->private = $private;
 
         return $this;
     }

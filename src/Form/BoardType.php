@@ -17,7 +17,7 @@ class BoardType extends AbstractType
     {
         $builder
             ->add('title')
-            ->add('public')
+            ->add('private')
             ->add('slug')
             ->add('content')
             ->add('sources', CollectionType::class, [
