@@ -9,19 +9,14 @@
 			  crossorigin="anonymous"></script>
               
         {% block stylesheets %}
-        <style>
-            .container {
-                width: 100%;
-                margin: 100px;
-            }
-        </style>
+            {{ encore_entry_link_tags('app') }}
         {% endblock %}
     </head>
+
     <body>
-        <div class="container">
-            
-            {% block body %}{% endblock %}
-            {% block javascripts %}{% endblock %}
-        </div>
+        {% block body %}{% endblock %}
+        {% block javascripts %}
+            {{ encore_entry_script_tags('app') }}
+        {% endblock %}
     </body>
 </html>
