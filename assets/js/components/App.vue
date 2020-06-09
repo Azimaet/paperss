@@ -1,27 +1,22 @@
 <template>
   <div>
-    <h2 class="center">My Application</h2>
-    <div v-text="message"></div>
-    {{ message }}
-    <ul>
-      <li :key="word.id" v-for="word in words">{{ word }}</li>
-    </ul>
+    <Header></Header>
+    <input type="text" v-model="user" />
+    Salut {{ user }}
   </div>
 </template>
 
 <script>
+import Header from "../organisms/Header";
+
 export default {
   data() {
     return {
-      message: "A list of words",
-      words: []
+      user: "Maxou"
     };
   },
-  mounted() {
-    let el = document.querySelector("div[data-words]");
-    let mywords = el.dataset.words.split(",");
-
-    this.words.push.apply(this.words, mywords);
+  components: {
+    Header
   }
 };
 </script>

@@ -1,7 +1,4 @@
-  .--.      .-'.      .--.      .--.      .--.      .--.      .`-.      .--.
 :::::.\::::::::.\::::::::.\::::::::.\::::::::.\::::::::.\::::::::.\::::::::.\
-'      `--'      `.-'      `--'      `--'      `--'      `-.'      `--'      `
-
                                     PAPERSS
                                     _______
 
@@ -47,6 +44,12 @@ _____
 
 ## Run Local Webserver:
 ```bash
-- symfony server:start
+symfony server:start
 ```
 _____
+
+## Doc:
+
+Symfony / Vue: http://zetcode.com/symfony/vue/
+https://blog.ippon.fr/2018/05/29/atomic-design-dans-la-pratique/
+https://stackoverflow.com/questions/48453897/webpack-vuejs-include-component-into-component
