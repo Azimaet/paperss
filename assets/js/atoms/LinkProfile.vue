@@ -1,5 +1,5 @@
 <template>
-  <a class="link-profile" href="/logout">Hello {{ test }}!</a>
+  <a class="link-profile" href="#">Hello {{ username }}!</a>
 </template>
 
 
@@ -7,7 +7,7 @@
 export default {
   data() {
     return {
-      test: "Maxou"
+      username: user.username
     };
   }
 };
@@ -17,8 +17,11 @@ export default {
 <!-- Css -->
 <style>
 .link-profile {
-  font-family: "Ubuntu", Helvetica, Arial, sans-serif;
   font-weight: normal;
   -webkit-font-smoothing: antialiased;
+  display: inline-block;
+  vertical-align: middle;
+  font-size: 14px;
+  font-family: Helvetica, Arial, sans-serif;
 }
 </style>

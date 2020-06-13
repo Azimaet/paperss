@@ -18,9 +18,17 @@
     <body>
         {% block body %}{% endblock %}
         {% block javascripts %}
-        <script>
-            var user = {{ user|json_encode }};
-        </script>
+            {% if user is null %}
+            <script>
+                var user = null;
+            </script>
+            {% else %}
+            <script>
+                var user = {{ user|json_encode() }};
+                user.username = "{{ user.username }}";
+            </script>
+            {% endif %}
+
             {{ encore_entry_script_tags('app') }}
         {% endblock %}
     </body>
