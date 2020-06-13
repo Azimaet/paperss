@@ -1,5 +1,5 @@
 <template>
-  <h1>Paperss</h1>
+  <h1 class="header_logo">Paperss</h1>
 </template>
 
 
@@ -11,4 +11,8 @@ export default {
 
 
 <style>
+.header_logo {
+  font-family: "Prata", serif;
+  font-size: 25px;
+}
 </style>

@@ -1,8 +1,8 @@
 <template>
   <div>
     <Header></Header>
-    <input type="text" v-model="user" />
-    Salut {{ user }}
+    <input type="text" v-model="test" />
+    Salut {{ test }}
   </div>
 </template>
 
@@ -12,7 +12,7 @@ import Header from "../organisms/Header";
 export default {
   data() {
     return {
-      user: "Maxou"
+      test: "Maxou"
     };
   },
   components: {

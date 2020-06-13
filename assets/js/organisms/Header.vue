@@ -2,6 +2,7 @@
   <header>
     <BtnMenu></BtnMenu>
     <Logo></Logo>
+    <BtnsUser></BtnsUser>
   </header>
 </template>
 
@@ -9,12 +10,14 @@
 <script>
 import BtnMenu from "../atoms/BtnMenu";
 import Logo from "../atoms/Logo";
+import BtnsUser from "../molecules/BtnsUser";
 
 export default {
   data() {},
   components: {
     BtnMenu,
-    Logo
+    Logo,
+    BtnsUser
   }
 };
 </script>
