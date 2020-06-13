@@ -5,7 +5,11 @@
 
 <script>
 export default {
-  data() {}
+  data() {
+    return {
+      //
+    };
+  }
 };
 </script>
 
@@ -14,5 +18,8 @@ export default {
 .header_logo {
   font-family: "Prata", serif;
   font-size: 25px;
+  left: 50%;
+  right: 50%;
+  transform: translateX(50%);
 }
 </style>

@@ -6,10 +6,13 @@
   </button>
 </template>
 
-
 <script>
 export default {
-  data() {},
+  data() {
+    return {
+      //
+    };
+  },
   methods: {
     transform: function(event) {
       event.currentTarget.classList.toggle("is-active");
@@ -17,6 +20,8 @@ export default {
   }
 };
 </script>
+
+
 
 
 <style>

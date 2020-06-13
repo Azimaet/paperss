@@ -66,7 +66,9 @@ class SecurityController extends AbstractController
             throw new \RuntimeException('You are already logged!');
         }
 
-        return $this->render('security/login.html.twig');
+        return $this->render('security/login.html.twig', [
+            'user' => $user
+        ]);
     }
 
     /** 

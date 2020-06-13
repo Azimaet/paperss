@@ -2,7 +2,7 @@
   <header>
     <BtnMenu></BtnMenu>
     <Logo></Logo>
-    <BtnsUser></BtnsUser>
+    <UserAutentication></UserAutentication>
   </header>
 </template>
 
@@ -10,14 +10,18 @@
 <script>
 import BtnMenu from "../atoms/BtnMenu";
 import Logo from "../atoms/Logo";
-import BtnsUser from "../molecules/BtnsUser";
+import UserAutentication from "../molecules/UserAutentication";
 
 export default {
-  data() {},
+  data() {
+    return {
+      //
+    };
+  },
   components: {
     BtnMenu,
     Logo,
-    BtnsUser
+    UserAutentication
   }
 };
 </script>

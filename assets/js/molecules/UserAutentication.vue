@@ -2,6 +2,8 @@
   <nav>
     <BtnRegister v-if="user === null"></BtnRegister>
     <BtnLogin v-if="user === null"></BtnLogin>
+    <LinkProfile v-if="user"></LinkProfile>
+    <BtnLogout v-if="user"></BtnLogout>
   </nav>
 </template>
 
@@ -9,7 +11,7 @@
 <script>
 import BtnRegister from "../atoms/BtnRegister";
 import BtnLogin from "../atoms/BtnLogin";
-import BtnProfile from "../atoms/BtnProfile";
+import LinkProfile from "../atoms/LinkProfile";
 import BtnLogout from "../atoms/BtnLogout";
 
 export default {
@@ -21,7 +23,7 @@ export default {
   components: {
     BtnRegister,
     BtnLogin,
-    BtnProfile,
+    LinkProfile,
     BtnLogout
   }
 };
@@ -30,4 +32,7 @@ export default {
 
 <!-- Css -->
 <style>
+nav > * {
+  margin: 0 5px;
+}
 </style>
