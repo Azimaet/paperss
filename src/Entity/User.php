@@ -41,7 +41,7 @@ class User implements UserInterface
     /**
      * @Assert\EqualTo(propertyPath="password", message="Mot de passe incorrect")
      */
-    private $confirm_password;
+    public $confirm_password;
 
     public function getId(): ?int
     {

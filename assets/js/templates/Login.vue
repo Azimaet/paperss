@@ -1,14 +1,21 @@
 <template>
-  <button class="btn-login btn-login--form" type="submit">Login</button>
+  <main>
+    <FormLogin></FormLogin>
+  </main>
 </template>
 
 
 <script>
+import FormLogin from "../organisms/FormLogin";
+
 export default {
   data() {
     return {
       //
     };
+  },
+  components: {
+    FormLogin
   }
 };
 </script>
@@ -16,8 +23,4 @@ export default {
 
 <!-- Css -->
 <style>
-.btn-login--form {
-  height: 50px;
-  width: 200px;
-}
 </style>

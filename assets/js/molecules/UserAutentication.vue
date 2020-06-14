@@ -1,7 +1,7 @@
 <template>
   <nav>
-    <BtnRegister v-if="user === null"></BtnRegister>
-    <BtnLogin v-if="user === null"></BtnLogin>
+    <LinkRegister v-if="user === null"></LinkRegister>
+    <LinkLogin v-if="user === null"></LinkLogin>
     <LinkProfile v-if="user"></LinkProfile>
     <BtnLogout v-if="user"></BtnLogout>
   </nav>
@@ -9,8 +9,8 @@
 
 
 <script>
-import BtnRegister from "../atoms/BtnRegister";
-import BtnLogin from "../atoms/BtnLogin";
+import LinkRegister from "../atoms/LinkRegister";
+import LinkLogin from "../atoms/LinkLogin";
 import LinkProfile from "../atoms/LinkProfile";
 import BtnLogout from "../atoms/BtnLogout";
 
@@ -21,8 +21,8 @@ export default {
     };
   },
   components: {
-    BtnRegister,
-    BtnLogin,
+    LinkRegister,
+    LinkLogin,
     LinkProfile,
     BtnLogout
   }

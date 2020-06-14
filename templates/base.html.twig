@@ -5,6 +5,7 @@
         <title>{% block title %}Welcome!{% endblock %}</title>
         <link href="https://fonts.googleapis.com/css2?family=Prata&display=swap" rel="stylesheet">
         <link href="https://fonts.googleapis.com/css2?family=Ubuntu&display=swap" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400&display=swap" rel="stylesheet">
         <script
 			  src="https://code.jquery.com/jquery-3.5.0.min.js"
 			  integrity="sha256-xNzN2a4ltkB44Mc/Jz3pT4iU1cmeR0FkXs4pru/JxaQ="
@@ -24,7 +25,7 @@
             </script>
             {% else %}
             <script>
-                var user = {{ user|json_encode() }};
+                var user = [];
                 user.username = "{{ user.username }}";
             </script>
             {% endif %}

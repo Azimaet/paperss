@@ -1,28 +1,31 @@
 <template>
   <div>
     <Header></Header>
-    <input type="text" v-model="test" />
-    Salut {{ test }}
+    <Home v-if="layout === 'Home'"></Home>
+    <Login v-if="layout === 'Login'"></Login>
   </div>
 </template>
 
 <script>
 import Header from "../organisms/Header";
+import Home from "../templates/Home";
+import Login from "../templates/Login";
+
+let layout = document.getElementById("layout").getAttribute("data-template");
 
 export default {
   data() {
     return {
-      test: "Maxou"
+      layout: layout
     };
   },
   components: {
-    Header
+    Header,
+    Home,
+    Login
   }
 };
 </script>
 
 <style>
-.center {
-  text-align: center;
-}
 </style>

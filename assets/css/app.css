@@ -129,3 +129,7 @@ body {
     background-color: #292929;
     color: #ffffff;
 }
+
+main {
+    min-height: calc(100vh - 70px);
+}
