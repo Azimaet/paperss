@@ -58,6 +58,7 @@ export default {
 }
 
 .form-login input {
+  background: white;
   color: #333333;
   line-height: 1.2;
   font-size: 18px;
