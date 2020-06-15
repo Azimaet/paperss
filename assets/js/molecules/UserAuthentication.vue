@@ -1,7 +1,7 @@
 <template>
   <nav>
-    <LinkRegister v-if="user === null"></LinkRegister>
-    <LinkLogin v-if="user === null"></LinkLogin>
+    <BtnRegister v-if="user === null" v-bind:contextBtn="contextBtn"></BtnRegister>
+    <BtnLogin v-if="user === null" v-bind:contextBtn="contextBtn"></BtnLogin>
     <LinkProfile v-if="user"></LinkProfile>
     <BtnLogout v-if="user"></BtnLogout>
   </nav>
@@ -9,20 +9,21 @@
 
 
 <script>
-import LinkRegister from "../atoms/LinkRegister";
-import LinkLogin from "../atoms/LinkLogin";
+import BtnRegister from "../atoms/BtnRegister";
+import BtnLogin from "../atoms/BtnLogin";
 import LinkProfile from "../atoms/LinkProfile";
 import BtnLogout from "../atoms/BtnLogout";
 
 export default {
   data() {
     return {
-      user: user
+      user: user,
+      contextBtn: "header"
     };
   },
   components: {
-    LinkRegister,
-    LinkLogin,
+    BtnRegister,
+    BtnLogin,
     LinkProfile,
     BtnLogout
   }

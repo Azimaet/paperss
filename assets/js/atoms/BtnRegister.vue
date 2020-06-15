@@ -1,10 +1,17 @@
 <template>
-  <a class="btn-login" href="/login">Login</a>
+  <a v-if="contextBtn === `header`" class="btn-register" href="/register">Register</a>
+  <button v-else class="btn-register btn-register--form" type="submit">Register</button>
 </template>
 
 
 <script>
 export default {
+  props: {
+    contextBtn: {
+      type: String,
+      required: true
+    }
+  },
   data() {
     return {
       //
@@ -16,7 +23,7 @@ export default {
 
 <!-- Css -->
 <style>
-.btn-login {
+.btn-register {
   text-transform: uppercase;
   font-family: "Ubuntu", Helvetica, Arial, sans-serif;
   font-weight: normal;
@@ -26,8 +33,8 @@ export default {
   border-radius: 2px;
   outline: 0;
   text-decoration: none;
-  color: #ffffff;
-  background-color: #4f8e45;
+  color: #000000;
+  background-color: #eeeeee;
   text-align: center;
   letter-spacing: 0.5px;
   height: 32.4px;
@@ -39,8 +46,19 @@ export default {
   transition: background-color 0.2s;
 }
 
-.btn-login:hover {
-  background-color: #73ab6a;
+.btn-register:hover {
+  background-color: #ffffff;
   transition: background-color 0.2s;
+}
+
+.btn-register--form {
+  height: 50px;
+  width: 200px;
+  background-color: #2d4671;
+  color: #ffffff;
+}
+
+.btn-register--form:hover {
+  background-color: #4d658d;
 }
 </style>

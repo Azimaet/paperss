@@ -66,28 +66,34 @@
       />
     </div>
 
-    <button type="submit" class="btn">Inscription</button>
+    <BtnRegister></BtnRegister>
+
     <input
       type="hidden"
       id="registration__token"
       name="registration[_token]"
       value="P-xlC5Bp8H3Qay76vJ7eQZT740xYlOxiSqwjTfn2TAs"
     />
+
+    <a href="/login">Already have login and password? Log in here!</a>
   </form>
 </template>
 
 <script>
 import BtnLogin from "../atoms/BtnLogin";
+import BtnRegister from "../atoms/BtnRegister";
 
 export default {
   props: {
     contextForm: {
       type: String,
       required: true
-    }
+    },
+    contextBtn: "form"
   },
   components: {
-    BtnLogin
+    BtnLogin,
+    BtnRegister
   }
 };
 </script>
