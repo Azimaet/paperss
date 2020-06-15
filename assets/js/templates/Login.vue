@@ -1,21 +1,21 @@
 <template>
   <main>
-    <FormLogin></FormLogin>
+    <FormAuthentication v-bind:contextForm="contextForm"></FormAuthentication>
   </main>
 </template>
 
 
 <script>
-import FormLogin from "../organisms/FormLogin";
+import FormAuthentication from "../organisms/FormAuthentication";
 
 export default {
   data() {
     return {
-      //
+      contextForm: "login"
     };
   },
   components: {
-    FormLogin
+    FormAuthentication
   }
 };
 </script>

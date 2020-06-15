@@ -1,5 +1,28 @@
 <template>
-  <form class="form-registration" name="registration" method="post">
+  <!-- Login Form -->
+  <form v-if="contextForm === `login`" class="form-authentication" action="/login" method="post">
+    <h2>Log in</h2>
+    <div class="form-group">
+      <input placeholder="Adresse Email" type="text" required name="_username" class="form-control" />
+    </div>
+    <div class="form-group">
+      <input
+        placeholder="Mot de Passe"
+        type="password"
+        required
+        name="_password"
+        class="form-control"
+      />
+    </div>
+
+    <BtnLogin></BtnLogin>
+
+    <a href="/register">Don't Have an account? Register now!</a>
+  </form>
+
+  <!-- Register Form -->
+  <form v-else class="form-authentication" name="registration" method="post">
+    <h2>Register</h2>
     <div class="form-group">
       <input
         type="text"
@@ -54,20 +77,25 @@
 </template>
 
 <script>
+import BtnLogin from "../atoms/BtnLogin";
+
 export default {
-  data() {
-    return {
-      //
-    };
+  props: {
+    contextForm: {
+      type: String,
+      required: true
+    }
   },
-  components: {}
+  components: {
+    BtnLogin
+  }
 };
 </script>
 
 
 <!-- Css -->
 <style>
-.form-registration {
+.form-authentication {
   font-family: "Open Sans", "Helvetica", "Arial", sans-serif;
   background-color: #000;
   text-align: center;
@@ -77,7 +105,7 @@ export default {
   left: 50%;
   transform: translate(-50%, -50%);
   width: 800px;
-  height: 450px;
+  height: auto;
   text-align: center;
   display: flex;
   flex-direction: column;
@@ -88,12 +116,16 @@ export default {
   padding: 40px 100px;
 }
 
-.form-registration > div {
+.form-authentication > * {
+  margin: 20px 0;
+}
+
+.form-group {
   width: 100%;
 }
 
-.form-registration input {
-  background: white;
+.form-control {
+  background-color: #fff;
   color: #333333;
   line-height: 1.2;
   font-size: 18px;
