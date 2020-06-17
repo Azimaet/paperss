@@ -158,6 +158,7 @@ class BoardController extends AbstractController
             'items' => $renderer->items,
             'languages' => $renderer->languages,
             'slug' => $slug,
+            'user'  => $user,
         ]);
     }
 

@@ -9,6 +9,7 @@
 import Vue from 'vue';
 import App from './components/App';
 
+import '../css/gridlex.css'
 import '../css/app.css'
 
 new Vue({

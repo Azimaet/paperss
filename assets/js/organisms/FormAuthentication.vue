@@ -86,8 +86,7 @@ import BtnRegister from "../atoms/BtnRegister";
 export default {
   props: {
     contextForm: {
-      type: String,
-      required: true
+      type: String
     },
     contextBtn: "form"
   },

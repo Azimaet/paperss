@@ -8,8 +8,7 @@
 export default {
   props: {
     contextBtn: {
-      type: String,
-      required: true
+      type: String
     }
   },
   data() {

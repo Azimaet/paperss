@@ -1,12 +1,17 @@
 <template>
-  <h1 class="header_logo">Paperss</h1>
+  <h1 class="header_logo">
+    <img :src="Logo" alt />
+  </h1>
 </template>
 
 
 <script>
+import Logo from "../../img/logo.svg";
+
 export default {
   data() {
     return {
+      Logo: Logo
       //
     };
   }
@@ -16,10 +21,12 @@ export default {
 
 <style>
 .header_logo {
-  font-family: "Prata", serif;
-  font-size: 25px;
   left: 50%;
   right: 50%;
   transform: translateX(50%);
+}
+
+.header_logo img {
+  width: 130px;
 }
 </style>
