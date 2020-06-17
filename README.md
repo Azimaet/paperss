@@ -53,3 +53,4 @@ _____
 Symfony / Vue: http://zetcode.com/symfony/vue/
 https://blog.ippon.fr/2018/05/29/atomic-design-dans-la-pratique/
 https://stackoverflow.com/questions/48453897/webpack-vuejs-include-component-into-component
+https://blog.elao.com/fr/dev/comment-integrer-vue-js-application-symfony/

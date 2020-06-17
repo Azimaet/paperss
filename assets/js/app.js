@@ -12,10 +12,24 @@ import App from './components/App';
 import '../css/gridlex.css'
 import '../css/app.css'
 
+// new Vue({
+//     el: '#app',
+//     render: h => h(App, {
+//         props: {
+//             username: el.getAttribute('data-username'),
+//         }
+//     })
+// })
+
 new Vue({
-    el: '#app',
-    render: h => h(App)
-})
+    render(h) {
+        return h(App, {
+            props: {
+                username: this.$el.getAttribute('data-name'),
+            },
+        })
+    },
+}).$mount('#app')
 
 
 

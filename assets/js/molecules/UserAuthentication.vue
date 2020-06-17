@@ -1,9 +1,9 @@
 <template>
   <nav>
-    <BtnRegister v-if="user === null" v-bind:contextBtn="contextBtn"></BtnRegister>
-    <BtnLogin v-if="user === null" v-bind:contextBtn="contextBtn"></BtnLogin>
-    <LinkProfile v-if="user"></LinkProfile>
-    <BtnLogout v-if="user"></BtnLogout>
+    <BtnRegister v-if="username === null" v-bind:contextBtn="contextBtn"></BtnRegister>
+    <BtnLogin v-if="username === null" v-bind:contextBtn="contextBtn"></BtnLogin>
+    <LinkProfile v-if="username" v-bind:username="username"></LinkProfile>
+    <BtnLogout v-if="username"></BtnLogout>
   </nav>
 </template>
 
@@ -14,11 +14,13 @@ import BtnLogin from "../atoms/BtnLogin";
 import LinkProfile from "../atoms/LinkProfile";
 import BtnLogout from "../atoms/BtnLogout";
 
+let username = document.getElementById("layout").getAttribute("data-username");
+
 export default {
   data() {
     return {
-      user: user,
-      contextBtn: "header"
+      contextBtn: "header",
+      username: username ? username : null
     };
   },
   components: {

@@ -3,11 +3,5 @@
 {% block title %}Paperss{% endblock %}
 
 {% block body %}
-
-<div id="layout" data-template="Home">
-    <div id="app">
-        <app></app>
-    </div>
-</div>
-
+    {% include 'app/tanker.html.twig' with {'template': 'Home'} %}
 {% endblock %}

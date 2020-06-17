@@ -5,9 +5,14 @@
 
 <script>
 export default {
+  props: {
+    username: {
+      required: true
+    }
+  },
   data() {
     return {
-      username: user.username
+      //
     };
   }
 };

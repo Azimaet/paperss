@@ -1,9 +1,5 @@
 {% extends 'base.html.twig' %}
 
 {% block body %}
-<div id="layout" data-template="Login">
-    <div id="app">
-        <app></app>
-    </div>
-</div>
+    {% include 'app/tanker.html.twig' with {'template': 'Login'} %}
 {% endblock %}
