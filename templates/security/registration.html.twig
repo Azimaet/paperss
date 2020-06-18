@@ -1,5 +1,12 @@
 {% extends 'base.html.twig' %}
 
 {% block body %}
+    {% set token = 
+        {
+            id : "registration_token",
+            name : "registration[_token]",
+            value : csrf_token('registration_token')
+        } 
+    %}
     {% include 'app/tanker.html.twig' with {'template': 'Register'} %}
 {% endblock %}

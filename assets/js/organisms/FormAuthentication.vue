@@ -68,12 +68,7 @@
 
     <BtnRegister></BtnRegister>
 
-    <input
-      type="hidden"
-      id="registration__token"
-      name="registration[_token]"
-      value="P-xlC5Bp8H3Qay76vJ7eQZT740xYlOxiSqwjTfn2TAs"
-    />
+    <input type="hidden" v-bind:id="token.id" v-bind:name="token.name" v-bind:value="token.value" />
 
     <a href="/login">Already have login and password? Log in here!</a>
   </form>
@@ -83,7 +78,16 @@
 import BtnLogin from "../atoms/BtnLogin";
 import BtnRegister from "../atoms/BtnRegister";
 
+let token = JSON.parse(
+  document.getElementById("layout").getAttribute("data-token")
+);
+
 export default {
+  data() {
+    return {
+      token: token
+    };
+  },
   props: {
     contextForm: {
       type: String
