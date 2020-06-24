@@ -27,18 +27,6 @@
         </div>
       </div>
       <div class="form-group">
-        <label for="board_slug" class="required">Slug</label>
-        <input
-          type="text"
-          id="board_slug"
-          name="board[slug]"
-          required="required"
-          maxlength="255"
-          placeholder="Domaine de la Board"
-          class="form-control"
-        />
-      </div>
-      <div class="form-group">
         <label for="board_content">Content</label>
         <textarea
           id="board_content"

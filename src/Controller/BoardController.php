@@ -13,7 +13,6 @@ use Symfony\Component\Security\Core\Security;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Doctrine\Common\Collections\ArrayCollection;
-use Symfony\Component\String\Slugger\AsciiSlugger;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -32,7 +31,7 @@ class BoardController extends AbstractController
 
     /**
      * @Route ("/board/new" , name="board_create")
-     * @Route ("/board/{slug}/edit" , name="board_edit")
+     * @Route ("/board/uuid/{uuid}/edit" , name="board_edit")
      */
     public function boardManage(Board $board = null, Request $request, EntityManagerInterface $manager, Security $security)
     {
@@ -56,14 +55,11 @@ class BoardController extends AbstractController
 
         // Init needed objects depending of the route:
         if($route === "board_create"){
-            $originalBoardSlug = null;
             $initialStateSources = null;
             $initialStateTags = null;
             $board = new Board();
         }
         elseif($route === "board_edit") {
-            $originalBoardSlug = $board->getSlug();
-            // $initialStateSources = $this->constructInitialSources($board);
             $initialStateTags = $this->constructInitialTags($board);
         }
 
@@ -78,9 +74,9 @@ class BoardController extends AbstractController
         // Check Submit Form:
         if($form->isSubmitted() && $form->isValid()){
 
-            $this->verifySlug($route, $board, $originalBoardSlug);
-
             if($route === "board_create"){
+                $uuid = $this->generateUuid();
+                $board->setUuid($uuid);
                 $board->setCreatedAt(new \DateTime());
                 $board->setScore(0);
                 $board->setOwnerId($user->getId());
@@ -100,7 +96,7 @@ class BoardController extends AbstractController
             $this->removeOrphanedTags($request, $manager);
 
             return $this->redirectToRoute('board_show', [
-                'slug' => $board->getSlug()
+                'uuid' => $board->getUuid()
             ]);
         }
 
@@ -136,15 +132,15 @@ class BoardController extends AbstractController
     }
 
     /**
-     * @Route("/board/{slug}", name="board_show")
+     * @Route("/board/uuid/{uuid}", name="board_show")
      */
-    public function boardShow($slug)
+    public function boardShow($uuid)
     {
         $user = $this->security->getUser();
 
         $repo = $this->getDoctrine()->getRepository(Board::class);
 
-        $board = $repo->findOneBySlug($slug);
+        $board = $repo->findOneByUuid($uuid);
 
         if(empty($board)){
             throw new \RuntimeException('The board dosn\'t exist. Verify url');
@@ -163,7 +159,7 @@ class BoardController extends AbstractController
             'board' => $board,
             'items' => $renderer->items,
             'languages' => $renderer->languages,
-            'slug' => $slug,
+            'uuid' => $uuid,
             'user'  => $user,
         ]);
     }
@@ -182,43 +178,22 @@ class BoardController extends AbstractController
         $manager->flush();
     }
 
-    private function filterSlugWords($slug){
-        //http://www.bannedwordlist.com/lists/swearWords.xml
-        $bannedWords = ["anal","anus","ballsack","bastard","bitch","biatch","blowjob","blow job","bollock","bollok","boob","buttplug","cunt","dildo","fellate","fellatio","fuck","f u c k","jizz","nigger","nigga","penis","piss","poop","pussy","scrotum","shit","s hit","sh1t","slut","smegma","spunk","whore"];
-        
-        foreach($bannedWords as $i) {
-            if (stripos($slug, $i) !== false) dd(stripos($slug, $i));
-        }
-        return true;
-
-    }
-
-    private function verifySlug($route, $board, $originalBoardSlug){
-        $slugger = new AsciiSlugger();
+    private function generateUuid(){
         $repo = $this->getDoctrine()->getRepository(Board::class);
+        $length = 12;
+        $characters = '0123456789abcdefghijklmnopqrstuvwxyz';
+        $charactersLength = strlen($characters);
+        $uuid = '';
 
-        $slug = strtolower($slugger->slug($board->getSlug()));
-        $isSafe = $this->filterSlugWords($slug);
-
-        if(!$isSafe){
-            throw new \RuntimeException('Your slug contains some prohibited words. Please replace it.');
-        }
-
-        $board->setSlug($slug);
-        $existingBoard = $repo->findBySlug($board->getSlug());
-
-        if(!$board->getId()){
-            if(!empty($existingBoard)){
-                throw new \RuntimeException('Slug is already exist in Database. Please find one another.');
+        do {
+            for ($i = 0; $i < $length; $i++) {
+                $uuid .= $characters[rand(0, $charactersLength - 1)];
             }
-        }
-        else {
-            if ($originalBoardSlug !== $board->getSlug()){
-                if(!empty($existingBoard)){
-                    throw new \RuntimeException('Slug is already exist in Database. Please find one another.');
-                }
-            }
-        }
+
+            $existingUuid = $repo->findByUuid($uuid);
+        } while(!empty($existingUuid));
+
+        return $uuid;
     }
 
     private function verifySourceUrl($source){
