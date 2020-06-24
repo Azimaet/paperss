@@ -3,6 +3,7 @@
 {% block title %}New board{% endblock %}
 
 {% block body %}
+
     {% set token = 
         {
             id : "board_token",
@@ -11,7 +12,7 @@
         }
     %}
 
-    {% include 'app/tanker.html.twig' with {'template': 'BoardForm'} %}
+    {% include 'app/tanker.html.twig' with {'template': 'BoardForm' , 'boardId' : board.id } %}
 {% endblock %}
 
 

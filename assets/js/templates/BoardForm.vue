@@ -79,7 +79,7 @@
 
       <input type="hidden" v-bind:id="token.id" v-bind:name="token.name" v-bind:value="token.value" />
     </form>
-    <button v-on:click="deleteBoard" data-id>Delete Board</button>
+    <button v-on:click="deleteBoard">Delete Board</button>
   </main>
 </template>
 
@@ -98,9 +98,9 @@ export default {
   methods: {
     deleteBoard: function(event) {
       if (confirm("Are you sure to remove Board?")) {
-        const id = event.target.getAttribute("data-id");
+        let id = document.getElementById("layout").getAttribute("data-boardid");
 
-        // Fetch request to the Backend:
+        //Fetch request to the Backend:
         fetch(`/board/${id}/delete`, {
           method: "DELETE"
         }).then(res => window.location.reload());

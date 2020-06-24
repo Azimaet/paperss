@@ -2,9 +2,8 @@
 <div id="layout" 
     data-template="{{ template }}" 
     data-username="{{ user ? user.username : null }}"
-    {% if template == "Register" or template == "BoardForm" %}
-    data-token="{{ token|json_encode }}"
-    {% endif %}>
+    {% if template == "Register" or template == "BoardForm" %}data-token="{{ token|json_encode }}"{% endif %}
+    {% if template == "BoardForm" %}data-boardid="{{ boardId }}"{% endif %}>
     <div id="app">
         <app></app>
     </div>
