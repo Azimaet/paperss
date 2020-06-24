@@ -71,8 +71,13 @@ class BoardController extends AbstractController
         $form = $this->createForm(BoardType::class, $board);
         $form->handleRequest($request);
 
+        if(!is_null($request->request->get('token'))){
+            $submittedToken = $request->request->get('token');
+            dd($submittedToken);
+        }
         // Check Submit Form:
         if($form->isSubmitted() && $form->isValid()){
+
             $this->verifySlug($route, $board, $originalBoardSlug);
 
             if($route === "board_create"){
@@ -102,7 +107,8 @@ class BoardController extends AbstractController
         return $this->render('board/create.html.twig', [
             'formBoard' => $form->createView(),
             'board' => $board,
-            'route' => $route
+            'route' => $route,
+            'user'  => $user,
         ]);
     }
 

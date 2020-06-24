@@ -76,12 +76,8 @@
         <legend class="col-form-label required">Tags</legend>
         <div id="board_tags"></div>
       </fieldset>
-      <input
-        type="hidden"
-        id="board__token"
-        name="board[_token]"
-        value="Zilw7MZSMJ1oOdO9j1UaOorS4zSqFf0QzaPlHDNi5Mw"
-      />
+
+      <input type="hidden" v-bind:id="token.id" v-bind:name="token.name" v-bind:value="token.value" />
     </form>
     <button v-on:click="deleteBoard" data-id>Delete Board</button>
   </main>
@@ -89,17 +85,21 @@
 
 
 <script>
+let token = JSON.parse(
+  document.getElementById("layout").getAttribute("data-token")
+);
+
 export default {
   data() {
     return {
-      //
+      token: token
     };
   },
   methods: {
     deleteBoard: function(event) {
       if (confirm("Are you sure to remove Board?")) {
         const id = event.target.getAttribute("data-id");
-        console.log(id);
+
         // Fetch request to the Backend:
         fetch(`/board/${id}/delete`, {
           method: "DELETE"

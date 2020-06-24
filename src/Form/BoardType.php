@@ -41,6 +41,9 @@ class BoardType extends AbstractType
     {
         $resolver->setDefaults([
             'data_class' => Board::class,
+            'csrf_protection' => true,
+            'csrf_field_name' => '_token',
+            'csrf_token_id'   => 'board_token',
         ]);
     }
 }

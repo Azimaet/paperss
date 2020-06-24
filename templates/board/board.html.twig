@@ -4,11 +4,7 @@
 
 {% block body %}
 
-<div id="layout" data-template="Board">
-    <div id="app">
-        <app></app>
-    </div>
-</div>
+{% include 'app/tanker.html.twig' with {'template': 'BoardShow'} %}
 
 {{ dump()}}
 <div class="example-wrapper">
