@@ -109,7 +109,7 @@ class BoardController extends AbstractController
     }
 
     /**
-     * @Route ("/board/{id}/delete" , name="board_delete")
+     * @Route ("/board/uuid/{uuid}/delete" , name="board_delete")
      * @Method({"DELETE"})
      */
     public function boardDelete(Board $board, Request $request, EntityManagerInterface $manager)

@@ -86,10 +86,13 @@ export default {
   methods: {
     deleteBoard: function(event) {
       if (confirm("Are you sure to remove Board?")) {
-        let id = document.getElementById("layout").getAttribute("data-boardid");
+        let uuid = document
+          .getElementById("layout")
+          .getAttribute("data-boarduuid");
 
         //Fetch request to the Backend:
-        fetch(`/board/${id}/delete`, {
+
+        fetch(`/board/uuid/${uuid}/delete`, {
           method: "DELETE"
         }).then(res => window.location.reload());
       }
